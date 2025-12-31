@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active">Dashboard</li>
+{% endblock %}
+
+{% block content %}
+{# Safe defaults: if 'stats' not passed, use empty dict #}
+{% set s = stats|default({}, true) %}
+<div class="dashboard-container">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="page-title mb-1">
+                    <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                </h1>
+                <p class="text-muted mb-0">
+                    Overview of your scans and recent activity.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-xl-3">
+            <div class="stat-card gradient-primary">
+                <div class="stat-icon">
+                    <i class="bi bi-search"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ s.total_scans|default(0) }}</h3>
+                    <p>Total Scans</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="stat-card gradient-danger">
+                <div class="stat-icon">
+                    <i class="bi bi-bug"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ s.vulnerabilities_found|default(0) }}</h3>
+                    <p>Vulnerabilities Found</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="stat-card gradient-success">
+                <div class="stat-icon">
+                    <i class="bi bi-globe"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ s.targets_scanned|default(0) }}</h3>
+                    <p>Targets Scanned</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="stat-card gradient-warning">
+                <div class="stat-icon">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ s.critical_issues|default(0) }}</h3>
+                    <p>Critical Issues</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Quick Actions & Recent Scans -->
+        <div class="col-lg-8">
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-lightning-charge me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="quick-actions-grid">
+                        <a href="{{ url_for('scanner.full_scan_page') }}" class="quick-action-btn">
+                            <i class="bi bi-shield-exclamation"></i>
+                            <span>Full Scan</span>
+                        </a>
+                        <a href="{{ url_for('recon.port_scan_page') }}" class="quick-action-btn">
+                            <i class="bi bi-diagram-3"></i>
+                            <span>Port Scan</span>
+                        </a>
+                        <a href="{{ url_for('recon.subdomain_page') }}" class="quick-action-btn">
+                            <i class="bi bi-collection"></i>
+                            <span>Subdomains</span>
+                        </a>
+                        <a href="{{ url_for('scanner.xss_scan_page') }}" class="quick-action-btn">
+                            <i class="bi bi-code-slash"></i>
+                            <span>XSS Scan</span>
+                        </a>
+                        <a href="{{ url_for('scanner.sqli_scan_page') }}" class="quick-action-btn">
+                            <i class="bi bi-database-exclamation"></i>
+                            <span>SQLi Scan</span>
+                        </a>
+                        <a href="{{ url_for('scanner.dir_scan_page') }}" class="quick-action-btn">
+                            <i class="bi bi-folder2-open"></i>
+                            <span>Dir Scan</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Scans -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clock-history me-2"></i>Recent Scans
+                    </h5>
+                    <a href="{{ url_for('scanner.scan_history_page') }}"
+                       class="btn btn-sm btn-outline-primary">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Target</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set scans = recent_scans|default([], true) %}
+                                {% if scans %}
+                                    {% for scan in scans %}
+                                        <tr>
+                                            <td>
+                                                <i class="bi bi-globe me-2 text-primary"></i>
+                                                {{ scan.target }}
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-secondary">{{ scan.type }}</span>
+                                            </td>
+                                            <td>
+                                                {% if scan.status == 'Completed' %}
+                                                    <span class="badge bg-success">{{ scan.status }}</span>
+                                                {% elif scan.status == 'In Progress' %}
+                                                    <span class="badge bg-warning">{{ scan.status }}</span>
+                                                {% else %}
+                                                    <span class="badge bg-danger">{{ scan.status }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ scan.date }}</td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <button type="button"
+                                                            class="btn btn-outline-primary"
+                                                            title="View">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                    <button type="button"
+                                                            class="btn btn-outline-success"
+                                                            title="Download">
+                                                        <i class="bi bi-download"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-muted text-center py-3">
+                                            No scans yet. Start your first scan from the Quick Actions above.
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Side Panel (chart + activity placeholder) -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-pie-chart me-2"></i>Vulnerability Distribution
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="vulnChart" height="220"
+                            data-critical="{{ s.critical_issues|default(0) }}"
+                            data-high="0"
+                            data-medium="0"
+                            data-low="0"
+                            data-info="0"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-activity me-2"></i>Activity Feed
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="activity-feed" id="activityFeed">
+                        <div class="text-muted small">
+                            Activity will appear here as you run scans.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active">Settings</li>
+{% endblock %}
+
+{% block content %}
+<div class="scanner-container">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="page-title mb-1">
+                    <i class="bi bi-gear me-2"></i>Settings
+                </h1>
+                <p class="text-muted mb-0">
+                    Configure UI preferences and default scan options (stored locally in your browser).
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- General Settings -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-sliders me-2"></i>General
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="settingsGeneralForm">
+                        <div class="mb-3">
+                            <label class="form-label">Default Theme</label>
+                            <select class="form-select" id="settingsTheme" name="theme">
+                                <option value="dark">Dark</option>
+                                <option value="light">Light</option>
+                            </select>
+                            <div class="form-text small">
+                                This is applied to new sessions; you can still toggle theme from the navbar.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Default Scan Profile</label>
+                            <select class="form-select" id="settingsDefaultProfile" name="default_profile">
+                                <option value="full">Full Scan</option>
+                                <option value="quick">Quick Scan</option>
+                                <option value="passive">Passive Scan</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Maximum Concurrent Threads</label>
+                            <input type="number"
+                                   class="form-control"
+                                   id="settingsMaxThreads"
+                                   name="max_threads"
+                                   min="1"
+                                   max="200"
+                                   value="50">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i>Save General Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Settings & About -->
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-shield-lock me-2"></i>Security &amp; Legal
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="settingsSecurityForm">
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="settingsShowDisclaimer"
+                                       name="show_disclaimer"
+                                       checked>
+                                <label class="form-check-label" for="settingsShowDisclaimer">
+                                    Show legal disclaimer on the home page and before starting scans
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Default Rate Limit (requests/second)</label>
+                            <input type="number"
+                                   class="form-control"
+                                   id="settingsRateLimit"
+                                   name="rate_limit"
+                                   min="1"
+                                   max="100"
+                                   value="10">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i>Save Security Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- About Section (no dummy numbers) -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-info-circle me-2"></i>About VulnScanner
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1">
+                        <strong>Version:</strong>
+                        <span id="aboutVersion">1.0.0</span>
+                    </p>
+                    <p class="mb-1">
+                        <strong>License:</strong>
+                        For authorized security testing only.
+                    </p>
+                    <p class="small text-muted mb-0">
+                        VulnScanner is intended for use by security professionals and system owners with explicit
+                        permission to test the targets in scope. Unauthorized scanning of systems you do not own
+                        or administer may be illegal in your jurisdiction.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+{% endblock %}

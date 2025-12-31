@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+
+{% block title %}XSS Scanner{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">Vulnerability Scanning</li>
+<li class="breadcrumb-item active">XSS Scanner</li>
+{% endblock %}
+
+{% block content %}
+<div class="scanner-container">
+    <!-- Header -->
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="page-title mb-1">
+                    <i class="bi bi-code-slash me-2"></i>XSS Scanner
+                </h1>
+                <p class="text-muted mb-0">
+                    Detect reflected and DOM-based Cross-Site Scripting vulnerabilities.
+                </p>
+            </div>
+            <div id="xssScanTimer" style="display:none;">
+                <span class="badge bg-primary fs-6">
+                    <i class="bi bi-clock me-1"></i>
+                    <span id="xssScanTimerDisplay">00:00:00</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Configuration Panel -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-gear me-2"></i>Scan Configuration
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="xssScanForm">
+                        <div class="mb-3">
+                            <label class="form-label">Target URL <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-globe"></i></span>
+                                <input type="text"
+                                       class="form-control"
+                                       id="xssTarget"
+                                       name="url"
+                                       placeholder="https://example.com/search?q=test"
+                                       required>
+                            </div>
+                            <div class="form-text small">
+                                Use a URL with query parameters to increase coverage.
+                            </div>
+                        </div>
+
+                        <!-- Crawl -->
+                        <div class="mb-3">
+                            <label class="form-label">Crawling</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="xssCrawl"
+                                       name="crawl">
+                                <label class="form-check-label" for="xssCrawl">
+                                    Crawl website for additional URLs and forms
+                                </label>
+                            </div>
+                            <div class="ms-3">
+                                <label class="form-label small mb-1">Crawl Depth</label>
+                                <input type="range"
+                                       class="form-range"
+                                       id="xssCrawlDepth"
+                                       name="depth"
+                                       min="1"
+                                       max="4"
+                                       value="2"
+                                       disabled>
+                                <div class="d-flex justify-content-between">
+                                    <small class="text-muted">Shallow</small>
+                                    <small class="text-muted" id="xssCrawlDepthValue">2</small>
+                                    <small class="text-muted">Deep</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payload Profile -->
+                        <div class="mb-3">
+                            <label class="form-label">Payload Profile</label>
+                            <select class="form-select" id="xssPayloadProfile" name="profile">
+                                <option value="standard" selected>Standard</option>
+                                <option value="aggressive">Aggressive</option>
+                                <option value="stealth">Stealth</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="xssCustomPayloadsContainer" style="display:none;">
+                            <label class="form-label">Custom Payloads</label>
+                            <textarea class="form-control"
+                                      id="xssCustomPayloads"
+                                      name="custom_payloads"
+                                      rows="4"
+                                      placeholder="One payload per line..."></textarea>
+                            <div class="form-text small">
+                                These are added on top of the standard payload set.
+                            </div>
+                        </div>
+
+                        <!-- Options -->
+                        <div class="mb-3">
+                            <label class="form-label">Options</label>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="xssTestForms"
+                                       name="test_forms"
+                                       checked>
+                                <label class="form-check-label" for="xssTestForms">
+                                    Test HTML forms for XSS
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="xssTestGetParams"
+                                       name="test_get"
+                                       checked>
+                                <label class="form-check-label" for="xssTestGetParams">
+                                    Test GET parameters
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary" id="xssStartBtn">
+                                <i class="bi bi-play-fill me-1"></i>Start XSS Scan
+                            </button>
+                            <button type="button" class="btn btn-outline-danger" id="xssStopBtn" disabled>
+                                <i class="bi bi-stop-fill me-1"></i>Stop
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Log -->
+            <div class="card" id="xssLogCard" style="display:none;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-terminal me-2"></i>Live Log
+                    </h5>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="xssClearLogBtn">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="live-log" id="xssLog"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="col-lg-8">
+            <!-- Progress -->
+            <div class="card mb-4" id="xssProgressCard" style="display:none;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span id="xssCurrentStatus">Waiting to start...</span>
+                        <span id="xssProgressText">0%</span>
+                    </div>
+                    <div class="progress" style="height:10px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                             id="xssProgressBar"
+                             style="width:0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h5 class="mb-0">
+                        <i class="bi bi-bug me-2"></i>XSS Findings
+                    </h5>
+                    <div class="btn-group btn-group-sm" id="xssResultActions" style="display:none;">
+                        <button type="button" class="btn btn-outline-primary" id="xssDownloadJson">
+                            <i class="bi bi-filetype-json me-1"></i>JSON
+                        </button>
+                        <button type="button" class="btn btn-outline-success" id="xssDownloadReport">
+                            <i class="bi bi-file-earmark-text me-1"></i>Report
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="xssNoResults" class="text-center text-muted py-4">
+                        <i class="bi bi-shield-check display-5 d-block mb-2"></i>
+                        <p class="mb-0">
+                            No results yet. Configure and start an XSS scan.
+                        </p>
+                    </div>
+
+                    <div id="xssResultsContainer" style="display:none;">
+                        <!-- Risk & Severity -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <h6 class="text-muted mb-2">Risk Score</h6>
+                                <div class="risk-meter mb-1">
+                                    <div class="risk-meter-fill"
+                                         id="xssRiskMeterFill"
+                                         style="width:0%;"></div>
+                                    <span class="risk-meter-label" id="xssRiskScore">0</span>
+                                </div>
+                                <span class="badge" id="xssRiskLevel">Unknown</span>
+                            </div>
+                            <div class="col-md-8">
+                                <h6 class="text-muted mb-2">Severity Breakdown</h6>
+                                <div class="summary-grid">
+                                    <div class="summary-item critical">
+                                        <div class="summary-count" id="xssCriticalCount">0</div>
+                                        <div class="summary-label">Critical</div>
+                                    </div>
+                                    <div class="summary-item high">
+                                        <div class="summary-count" id="xssHighCount">0</div>
+                                        <div class="summary-label">High</div>
+                                    </div>
+                                    <div class="summary-item medium">
+                                        <div class="summary-count" id="xssMediumCount">0</div>
+                                        <div class="summary-label">Medium</div>
+                                    </div>
+                                    <div class="summary-item low">
+                                        <div class="summary-count" id="xssLowCount">0</div>
+                                        <div class="summary-label">Low</div>
+                                    </div>
+                                    <div class="summary-item info">
+                                        <div class="summary-count" id="xssInfoCount">0</div>
+                                        <div class="summary-label">Info</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabs -->
+                        <ul class="nav nav-tabs" id="xssTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#xssVulnsTab">
+                                    <i class="bi bi-bug me-1"></i>Vulnerabilities
+                                    <span class="badge bg-danger ms-1" id="xssVulnsBadge">0</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#xssPayloadsTab">
+                                    <i class="bi bi-code me-1"></i>Payloads
+                                </a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content pt-3">
+                            <!-- Vulns Tab -->
+                            <div class="tab-pane fade show active" id="xssVulnsTab">
+                                <div class="mb-3" id="xssVulnFilter">
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button"
+                                                class="btn btn-outline-secondary active"
+                                                data-filter="all">
+                                            All
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-outline-danger"
+                                                data-filter="critical">
+                                            Critical
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-outline-warning"
+                                                data-filter="high">
+                                            High
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-outline-info"
+                                                data-filter="medium">
+                                            Medium
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="xssVulnsList"></div>
+                            </div>
+
+                            <!-- Payloads Tab -->
+                            <div class="tab-pane fade" id="xssPayloadsTab">
+                                <div class="table-responsive" style="max-height:400px; overflow-y:auto;">
+                                    <table class="table table-sm mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Payload</th>
+                                                <th>Reflected</th>
+                                                <th>Context</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="xssPayloadsList">
+                                            <!-- Filled by JS (may be placeholder for now) -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div> <!-- /tab-content -->
+                    </div> <!-- /xssResultsContainer -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- XSS Vulnerability Modal -->
+<div class="modal fade" id="xssVulnModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="xssVulnModalTitle">XSS Vulnerability Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="xssVulnModalBody">
+                <!-- Filled by JS -->
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Close
+                </button>
+                <button type="button" class="btn btn-primary" id="xssCopyVulnDetails">
+                    <i class="bi bi-clipboard me-1"></i>Copy Details
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/scanner_xss.js') }}"></script>
+{% endblock %}

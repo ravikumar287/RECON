@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block title %}About{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item active">About</li>
+{% endblock %}
+
+{% block content %}
+<div class="scanner-container">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="page-title mb-1">
+                    <i class="bi bi-info-circle me-2"></i>About VulnScanner
+                </h1>
+                <p class="text-muted mb-0">
+                    Learn more about this security assessment and reconnaissance toolkit.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Overview -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-shield-lock me-2"></i>Overview
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>VulnScanner</strong> is a web-based security assessment tool designed to assist
+                        security engineers, penetration testers, and system administrators in identifying potential
+                        security issues in web applications and network infrastructure.
+                    </p>
+                    <p>
+                        It combines multiple modules&mdash;reconnaissance, port scanning, subdomain enumeration, web
+                        crawling, vulnerability detection, and reporting&mdash;into a single, cohesive interface.
+                    </p>
+                    <p class="mb-0">
+                        This tool is intended to be easy to use while still exposing powerful capabilities usually
+                        found in command-line focused security toolchains.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-grid me-2"></i>Key Features
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <h6><i class="bi bi-diagram-3 me-2 text-primary"></i>Reconnaissance</h6>
+                            <ul class="text-muted small mb-0">
+                                <li>Port scanning with service detection</li>
+                                <li>DNS &amp; WHOIS intelligence</li>
+                                <li>Subdomain enumeration</li>
+                                <li>Technology and stack detection</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="bi bi-bug me-2 text-danger"></i>Vulnerability Scanning</h6>
+                            <ul class="text-muted small mb-0">
+                                <li>XSS detection (reflected &amp; DOM-oriented heuristics)</li>
+                                <li>SQL injection detection (error, boolean, time, union)</li>
+                                <li>Directory and file bruteforcing</li>
+                                <li>Security headers and SSL/TLS checks</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="bi bi-diagram-2 me-2 text-info"></i>Crawling &amp; Forms</h6>
+                            <ul class="text-muted small mb-0">
+                                <li>Automatic crawling with depth and scope control</li>
+                                <li>Form discovery (login, search, upload)</li>
+                                <li>Email and comment extraction for reconnaissance</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="bi bi-file-earmark-text me-2 text-success"></i>Reporting</h6>
+                            <ul class="text-muted small mb-0">
+                                <li>JSON reports and history view</li>
+                                <li>Aggregated risk scoring</li>
+                                <li>Per-vulnerability details and remediation hints</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legal Disclaimer -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Legal Disclaimer
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-warning mb-2">
+                        <i class="bi bi-shield-lock me-2"></i>
+                        <strong>Authorized Use Only</strong>
+                    </p>
+                    <p class="small mb-2">
+                        This tool is designed for security testing of systems that you own or have explicit, written
+                        permission to assess. Using this tool against systems or networks without permission may be
+                        illegal and could lead to civil and criminal penalties.
+                    </p>
+                    <p class="small mb-0">
+                        By using VulnScanner, you agree to:
+                    </p>
+                    <ul class="small text-muted mb-0">
+                        <li>Use it only on targets for which you have authorization.</li>
+                        <li>Comply with all applicable laws and regulations in your jurisdiction.</li>
+                        <li>Accept full responsibility for the results of scans you initiate.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Version & Credits -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-tag me-2"></i>Version
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>VulnScanner</strong> <span id="aboutVersion">1.0.0</span></p>
+                    <p class="text-muted small mb-0">
+                        Future updates may include additional modules, integrations, and reporting formats.
+                    </p>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-boxes me-2"></i>Technology Stack
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="text-muted small mb-0">
+                        <li>Python, Flask, Flask-SocketIO</li>
+                        <li>Bootstrap 5, Bootstrap Icons</li>
+                        <li>Requests, dnspython, python-whois</li>
+                        <li>Chart.js &amp; custom JavaScript for dashboards</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-people me-2"></i>Contact &amp; Support
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="small mb-2">
+                        For questions, bug reports, or feature requests, please use the configured support channel or
+                        repository issue tracker.
+                    </p>
+                    <ul class="list-unstyled small mb-0">
+                        <li class="mb-1">
+                            <i class="bi bi-envelope me-2"></i>
+                            <span id="aboutSupportEmail">support@example.com</span>
+                        </li>
+                        <li>
+                            <i class="bi bi-github me-2"></i>
+                            <span id="aboutGithub">GitHub repository (link configurable)</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/about.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,541 @@
+{% extends 'base.html' %}
+
+{% block title %}HTTP Headers Analysis{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">Reconnaissance</li>
+<li class="breadcrumb-item active">HTTP Headers</li>
+{% endblock %}
+
+{% block content %}
+<div class="scanner-container">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="page-title mb-1">
+                    <i class="bi bi-file-earmark-code me-2"></i>HTTP Headers Analysis
+                </h1>
+                <p class="text-muted mb-0">Analyze HTTP response headers for security issues and information disclosure</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <!-- Configuration -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-gear me-2"></i>Analysis Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <form id="headersForm">
+                        <div class="mb-3">
+                            <label class="form-label">Target URL <span class="text-danger">*</span></label>
+                            <input type="url" class="form-control" id="url" name="url" 
+                                   placeholder="https://example.com" required>
+                            <div class="form-text">Enter the full URL to analyze</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Request Method</label>
+                            <select class="form-select" id="method" name="method">
+                                <option value="GET">GET</option>
+                                <option value="HEAD">HEAD</option>
+                                <option value="OPTIONS">OPTIONS</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="followRedirects" name="follow_redirects" checked>
+                                <label class="form-check-label" for="followRedirects">
+                                    Follow Redirects
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="analyzeCookies" name="analyze_cookies" checked>
+                                <label class="form-check-label" for="analyzeCookies">
+                                    Analyze Cookies
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" id="analyzeBtn">
+                                <i class="bi bi-search me-2"></i>Analyze Headers
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Security Headers Checklist -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5><i class="bi bi-shield-check me-2"></i>Security Headers</h5>
+                </div>
+                <div class="card-body">
+                    <div class="security-checklist" id="securityChecklist">
+                        <div class="checklist-item" data-header="Content-Security-Policy">
+                            <i class="bi bi-circle text-muted"></i>
+                            <span>Content-Security-Policy</span>
+                        </div>
+                        <div class="checklist-item" data-header="X-Frame-Options">
+                            <i class="bi bi-circle text-muted"></i>
+                            <span>X-Frame-Options</span>
+                        </div>
+                        <div class="checklist-item" data-header="X-Content-Type-Options">
+                            <i class="bi bi-circle text-muted"></i>
+                            <span>X-Content-Type-Options</span>
+                        </div>
+                        <div class="checklist-item" data-header="X-XSS-Protection">
+                            <i class="bi bi-circle text-muted"></i>
+                            <span>X-XSS-Protection</span>
+                        </div>
+                        <div class="checklist-item" data-header="Strict-Transport-Security">
+                            <i class="bi bi-circle text-muted"></i>
+                            <span>Strict-Transport-Security</span>
+                        </div>
+                        <div class="checklist-item" data-header="Referrer-Policy">
+                            <i class="bi bi-circle text-muted"></i>
+                            <span>Referrer-Policy</span>
+                        </div>
+                        <div class="checklist-item" data-header="Permissions-Policy">
+                            <i class="bi bi-circle text-muted"></i>
+                            <span>Permissions-Policy</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results -->
+        <div class="col-lg-8">
+            <!-- Score Card -->
+            <div class="card mb-4" id="scoreCard" style="display: none;">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-3 text-center">
+                            <div class="score-circle" id="scoreCircle">
+                                <span class="score-value" id="scoreValue">0</span>
+                                <span class="score-label">/ 100</span>
+                            </div>
+                            <p class="mb-0 mt-2">
+                                <span class="badge" id="gradeLabel">-</span>
+                            </p>
+                        </div>
+                        <div class="col-md-9">
+                            <h5>Security Score</h5>
+                            <p class="text-muted mb-2" id="scoreDescription">
+                                Complete the analysis to see your security score.
+                            </p>
+                            <div class="row g-2">
+                                <div class="col-4">
+                                    <div class="mini-stat">
+                                        <span class="text-success" id="presentCount">0</span>
+                                        <small>Present</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="mini-stat">
+                                        <span class="text-danger" id="missingCount">0</span>
+                                        <small>Missing</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="mini-stat">
+                                        <span class="text-warning" id="warningCount">0</span>
+                                        <small>Warnings</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="bi bi-list-check me-2"></i>Analysis Results</h5>
+                    <button class="btn btn-outline-secondary btn-sm" id="exportHeaders" disabled>
+                        <i class="bi bi-download me-1"></i>Export
+                    </button>
+                </div>
+                <div class="card-body">
+                    <!-- No Results -->
+                    <div class="text-center text-muted py-5" id="noResults">
+                        <i class="bi bi-inbox display-4"></i>
+                        <p class="mt-3">No results yet. Enter a URL and analyze headers.</p>
+                    </div>
+                    
+                    <!-- Results -->
+                    <div id="resultsContainer" style="display: none;">
+                        <!-- Response Info -->
+                        <div class="response-info mb-4">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <small class="text-muted">Status Code</small>
+                                    <p class="mb-0 fw-bold" id="statusCode">-</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="text-muted">Response Time</small>
+                                    <p class="mb-0 fw-bold" id="responseTime">-</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="text-muted">Server</small>
+                                    <p class="mb-0 fw-bold" id="serverHeader">-</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="text-muted">Content-Type</small>
+                                    <p class="mb-0 fw-bold" id="contentType">-</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Tabs -->
+                        <ul class="nav nav-tabs" id="resultsTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#securityTab">
+                                    <i class="bi bi-shield me-1"></i>Security Analysis
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#allHeadersTab">
+                                    <i class="bi bi-list me-1"></i>All Headers
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#cookiesTab">
+                                    <i class="bi bi-cookie me-1"></i>Cookies
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#infoTab">
+                                    <i class="bi bi-info-circle me-1"></i>Info Disclosure
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content pt-3">
+                            <!-- Security Analysis Tab -->
+                            <div class="tab-pane fade show active" id="securityTab">
+                                <div id="securityAnalysis">
+                                    <!-- Security headers analysis will be populated here -->
+                                </div>
+                            </div>
+                            
+                            <!-- All Headers Tab -->
+                            <div class="tab-pane fade" id="allHeadersTab">
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 30%;">Header</th>
+                                                <th>Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="allHeadersBody">
+                                            <!-- Headers will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- Cookies Tab -->
+                            <div class="tab-pane fade" id="cookiesTab">
+                                <div id="cookiesAnalysis">
+                                    <!-- Cookie analysis will be populated here -->
+                                </div>
+                            </div>
+                            
+                            <!-- Info Disclosure Tab -->
+                            <div class="tab-pane fade" id="infoTab">
+                                <div id="infoDisclosure">
+                                    <!-- Information disclosure will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+.checklist-item:last-child {
+    border-bottom: none;
+}
+.checklist-item.present i {
+    color: var(--success-color);
+}
+.checklist-item.missing i {
+    color: var(--danger-color);
+}
+.score-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid var(--primary-color);
+    margin: 0 auto;
+}
+.score-value {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+}
+.score-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+.mini-stat {
+    text-align: center;
+    padding: 0.5rem;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+}
+.mini-stat span {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+.header-item {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: var(--radius-md);
+    background: var(--bg-tertiary);
+}
+.header-item.good {
+    border-left: 3px solid var(--success-color);
+}
+.header-item.bad {
+    border-left: 3px solid var(--danger-color);
+}
+.header-item.warning {
+    border-left: 3px solid var(--warning-color);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('headersForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const url = document.getElementById('url').value;
+    
+    VulnScanner.showLoading(true, 'Analyzing HTTP headers...');
+    
+    try {
+        const response = await VulnScanner.apiRequest('/recon/api/headers', 'POST', {
+            url: url
+        });
+        
+        VulnScanner.showLoading(false);
+        displayResults(response);
+        
+    } catch (error) {
+        VulnScanner.showLoading(false);
+        VulnScanner.showAlert('Header analysis failed: ' + error.message, 'danger');
+    }
+});
+
+function displayResults(data) {
+    document.getElementById('noResults').style.display = 'none';
+    document.getElementById('resultsContainer').style.display = 'block';
+    document.getElementById('scoreCard').style.display = 'block';
+    document.getElementById('exportHeaders').disabled = false;
+    
+    // Update score
+    const score = data.score || 0;
+    document.getElementById('scoreValue').textContent = score;
+    
+    const grade = data.grade || 'F';
+    const gradeLabel = document.getElementById('gradeLabel');
+    gradeLabel.textContent = grade;
+    gradeLabel.className = 'badge ' + getGradeClass(grade);
+    
+    // Update score circle color
+    const scoreCircle = document.getElementById('scoreCircle');
+    scoreCircle.style.borderColor = getScoreColor(score);
+    
+    // Update counts
+    const present = data.security_headers?.filter(h => h.present).length || 0;
+    const missing = data.missing_headers?.length || 0;
+    const warnings = data.information_disclosure?.length || 0;
+    
+    document.getElementById('presentCount').textContent = present;
+    document.getElementById('missingCount').textContent = missing;
+    document.getElementById('warningCount').textContent = warnings;
+    
+    // Update response info
+    document.getElementById('statusCode').textContent = data.status_code || '-';
+    document.getElementById('serverHeader').textContent = data.server_header || 'Not disclosed';
+    document.getElementById('contentType').textContent = data.headers?.['Content-Type'] || '-';
+    
+    // Update security checklist
+    updateSecurityChecklist(data.headers);
+    
+    // Display security analysis
+    displaySecurityAnalysis(data.security_headers, data.missing_headers);
+    
+    // Display all headers
+    displayAllHeaders(data.headers);
+    
+    // Display cookies
+    displayCookies(data.cookies);
+    
+    // Display info disclosure
+    displayInfoDisclosure(data.information_disclosure);
+}
+
+function getGradeClass(grade) {
+    if (grade.startsWith('A')) return 'bg-success';
+    if (grade.startsWith('B')) return 'bg-info';
+    if (grade.startsWith('C')) return 'bg-warning';
+    if (grade.startsWith('D')) return 'bg-orange';
+    return 'bg-danger';
+}
+
+function getScoreColor(score) {
+    if (score >= 80) return 'var(--success-color)';
+    if (score >= 60) return 'var(--info-color)';
+    if (score >= 40) return 'var(--warning-color)';
+    return 'var(--danger-color)';
+}
+
+function updateSecurityChecklist(headers) {
+    const checklist = document.getElementById('securityChecklist');
+    const items = checklist.querySelectorAll('.checklist-item');
+    
+    items.forEach(item => {
+        const headerName = item.dataset.header;
+        const icon = item.querySelector('i');
+        
+        if (headers && headers[headerName]) {
+            item.classList.add('present');
+            item.classList.remove('missing');
+            icon.className = 'bi bi-check-circle-fill text-success';
+        } else {
+            item.classList.add('missing');
+            item.classList.remove('present');
+            icon.className = 'bi bi-x-circle-fill text-danger';
+        }
+    });
+}
+
+function displaySecurityAnalysis(securityHeaders, missingHeaders) {
+    const container = document.getElementById('securityAnalysis');
+    let html = '';
+    
+    // Present headers
+    if (securityHeaders && securityHeaders.length > 0) {
+        securityHeaders.forEach(header => {
+            html += `
+                <div class="header-item ${header.valid ? 'good' : 'warning'}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">
+                                <i class="bi bi-${header.valid ? 'check-circle text-success' : 'exclamation-triangle text-warning'} me-2"></i>
+                                ${header.name}
+                            </h6>
+                            <code class="small">${header.value || 'N/A'}</code>
+                        </div>
+                        <span class="badge bg-${header.valid ? 'success' : 'warning'}">${header.score}/${header.max_score}</span>
+                    </div>
+                    ${header.recommendation ? `<p class="text-muted small mt-2 mb-0">${header.recommendation}</p>` : ''}
+                </div>
+            `;
+        });
+    }
+    
+    // Missing headers
+    if (missingHeaders && missingHeaders.length > 0) {
+        missingHeaders.forEach(header => {
+            html += `
+                <div class="header-item bad">
+                    <h6 class="mb-1">
+                        <i class="bi bi-x-circle text-danger me-2"></i>
+                        ${header}
+                    </h6>
+                    <p class="text-muted small mb-0">This security header is missing and should be implemented.</p>
+                </div>
+            `;
+        });
+    }
+    
+    container.innerHTML = html || '<p class="text-muted">No security headers to analyze.</p>';
+}
+
+function displayAllHeaders(headers) {
+    const tbody = document.getElementById('allHeadersBody');
+    
+    if (headers && Object.keys(headers).length > 0) {
+        tbody.innerHTML = Object.entries(headers).map(([name, value]) => `
+            <tr>
+                <td><strong>${name}</strong></td>
+                <td><code class="small">${value}</code></td>
+            </tr>
+        `).join('');
+    } else {
+        tbody.innerHTML = '<tr><td colspan="2" class="text-muted">No headers found</td></tr>';
+    }
+}
+
+function displayCookies(cookies) {
+    const container = document.getElementById('cookiesAnalysis');
+    
+    if (cookies && cookies.length > 0) {
+        container.innerHTML = cookies.map(cookie => `
+            <div class="header-item ${cookie.secure && cookie.httpOnly ? 'good' : 'warning'}">
+                <h6 class="mb-2">${cookie.name}</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge ${cookie.secure ? 'bg-success' : 'bg-danger'}">
+                        ${cookie.secure ? '✓' : '✗'} Secure
+                    </span>
+                    <span class="badge ${cookie.httpOnly ? 'bg-success' : 'bg-danger'}">
+                        ${cookie.httpOnly ? '✓' : '✗'} HttpOnly
+                    </span>
+                    <span class="badge ${cookie.sameSite ? 'bg-success' : 'bg-warning'}">
+                        SameSite: ${cookie.sameSite || 'Not Set'}
+                    </span>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        container.innerHTML = '<p class="text-muted">No cookies found.</p>';
+    }
+}
+
+function displayInfoDisclosure(disclosures) {
+    const container = document.getElementById('infoDisclosure');
+    
+    if (disclosures && disclosures.length > 0) {
+        container.innerHTML = disclosures.map(item => `
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <strong>${item}</strong>
+                <p class="small mb-0 mt-1">Information disclosure detected - consider removing or masking this header.</p>
+            </div>
+        `).join('');
+    } else {
+        container.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle me-2"></i>No information disclosure detected.</div>';
+    }
+}
+</script>
+{% endblock %}

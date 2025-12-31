@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+
+{% block title %}Security Headers{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">Vulnerability Scanning</li>
+<li class="breadcrumb-item active">Security Headers</li>
+{% endblock %}
+
+{% block content %}
+<div class="scanner-container">
+    <!-- Header -->
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="page-title mb-1">
+                    <i class="bi bi-shield-check me-2"></i>Security Headers
+                </h1>
+                <p class="text-muted mb-0">
+                    Check the presence and configuration of security-related HTTP response headers.
+                </p>
+            </div>
+            <div id="secHeadersTimer" style="display:none;">
+                <span class="badge bg-primary fs-6">
+                    <i class="bi bi-clock me-1"></i>
+                    <span id="secHeadersTimerDisplay">00:00:00</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Config Panel -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-gear me-2"></i>Scan Configuration
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="secHeadersForm">
+                        <div class="mb-3">
+                            <label class="form-label">Target URL <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-globe"></i></span>
+                                <input type="url"
+                                       class="form-control"
+                                       id="secHeadersUrl"
+                                       name="url"
+                                       placeholder="https://example.com"
+                                       required>
+                            </div>
+                            <div class="form-text small">
+                                URL of the entry point you are authorized to test.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">HTTP Method</label>
+                            <select class="form-select" id="secHeadersMethod" name="method">
+                                <option value="GET" selected>GET</option>
+                                <option value="HEAD">HEAD</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Options</label>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="secHeadersFollowRedirects"
+                                       name="follow_redirects"
+                                       checked>
+                                <label class="form-check-label" for="secHeadersFollowRedirects">
+                                    Follow redirects
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" id="secHeadersStartBtn">
+                                <i class="bi bi-play-fill me-1"></i>Analyze Security Headers
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Checklist (same as recon) -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-check me-2"></i>Headers Checklist
+                    </h5>
+                </div>
+                <div class="card-body" id="secHeadersChecklist">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-circle text-muted me-2"></i>
+                        <span>Content-Security-Policy</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-circle text-muted me-2"></i>
+                        <span>Strict-Transport-Security</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-circle text-muted me-2"></i>
+                        <span>X-Frame-Options</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-circle text-muted me-2"></i>
+                        <span>X-Content-Type-Options</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-circle text-muted me-2"></i>
+                        <span>Referrer-Policy</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-circle text-muted me-2"></i>
+                        <span>Permissions-Policy</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="col-lg-8">
+            <!-- Score -->
+            <div class="card mb-4" id="secHeadersScoreCard" style="display:none;">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-3 text-center">
+                            <div class="score-circle" id="secHeadersScoreCircle">
+                                <span class="score-value" id="secHeadersScoreValue">0</span>
+                                <span class="score-label">/ 100</span>
+                            </div>
+                            <p class="mb-0 mt-2">
+                                <span class="badge" id="secHeadersGradeLabel">-</span>
+                            </p>
+                        </div>
+                        <div class="col-md-9">
+                            <h5 class="mb-1">Security Score</h5>
+                            <p class="text-muted mb-3" id="secHeadersScoreDescription">
+                                Run a scan to compute the security header score.
+                            </p>
+                            <div class="row g-2">
+                                <div class="col-4">
+                                    <div class="mini-stat text-center">
+                                        <span class="text-success d-block" id="secHeadersPresentCount">0</span>
+                                        <small>Present</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="mini-stat text-center">
+                                        <span class="text-danger d-block" id="secHeadersMissingCount">0</span>
+                                        <small>Missing</small>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="mini-stat text-center">
+                                        <span class="text-warning d-block" id="secHeadersWarningsCount">0</span>
+                                        <small>Warnings</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Card -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h5 class="mb-0">
+                        <i class="bi bi-shield-lock me-2"></i>Analysis Results
+                    </h5>
+                    <div class="btn-group btn-group-sm" id="secHeadersResultActions" style="display:none;">
+                        <button type="button"
+                                class="btn btn-outline-primary"
+                                id="secHeadersDownloadJson">
+                            <i class="bi bi-filetype-json me-1"></i>JSON
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Empty State -->
+                    <div id="secHeadersNoResults" class="text-center text-muted py-4">
+                        <i class="bi bi-inbox display-5 d-block mb-2"></i>
+                        <p class="mb-0">
+                            No results yet. Enter a URL and analyze security headers.
+                        </p>
+                    </div>
+
+                    <!-- Results -->
+                    <div id="secHeadersResultsContainer" style="display:none;">
+                        <!-- Response Info -->
+                        <div class="mb-4">
+                            <h6 class="text-muted mb-2">Response Information</h6>
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <small class="text-muted d-block">Status Code</small>
+                                    <span class="fw-bold" id="secHeadersStatusCode">-</span>
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="text-muted d-block">Server</small>
+                                    <span class="fw-bold" id="secHeadersServer">-</span>
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="text-muted d-block">Content-Type</small>
+                                    <span class="fw-bold" id="secHeadersContentType">-</span>
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="text-muted d-block">Response Time</small>
+                                    <span class="fw-bold" id="secHeadersResponseTime">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabs -->
+                        <ul class="nav nav-tabs" id="secHeadersTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#secHeadersSecurityTab">
+                                    <i class="bi bi-shield me-1"></i>Security Headers
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#secHeadersAllTab">
+                                    <i class="bi bi-list me-1"></i>All Headers
+                                </a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content pt-3">
+                            <!-- Security Headers Tab -->
+                            <div class="tab-pane fade show active" id="secHeadersSecurityTab">
+                                <div id="secHeadersSecurityList">
+                                    <!-- Filled by scanner_security_headers.js -->
+                                </div>
+                            </div>
+
+                            <!-- All Headers Tab -->
+                            <div class="tab-pane fade" id="secHeadersAllTab">
+                                <div class="table-responsive">
+                                    <table class="table table-sm mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:30%;">Header</th>
+                                                <th>Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="secHeadersAllList">
+                                            <!-- Filled by scanner_security_headers.js -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div> <!-- /tab-content -->
+                    </div> <!-- /secHeadersResultsContainer -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/scanner_security_headers.js') }}"></script>
+{% endblock %}

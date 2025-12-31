@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+
+{% block title %}Port Scanner{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">Reconnaissance</li>
+<li class="breadcrumb-item active">Port Scanner</li>
+{% endblock %}
+
+{% block content %}
+<div class="scanner-container">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="page-title mb-1">
+                    <i class="bi bi-diagram-3 me-2"></i>Port Scanner
+                </h1>
+                <p class="text-muted mb-0">
+                    Discover open TCP ports and services on your target host.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Configuration -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-gear me-2"></i>Scan Configuration
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="portScanForm">
+                        <div class="mb-3">
+                            <label class="form-label">Target <span class="text-danger">*</span></label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="target"
+                                   name="target"
+                                   placeholder="example.com or 192.168.1.1"
+                                   required>
+                            <div class="form-text small">
+                                Enter a domain name or IP address you are authorized to test.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Port Range</label>
+                            <select class="form-select" id="portRange" name="port_range">
+                                <option value="common">Common ports (21,22,80,443,...)</option>
+                                <option value="quick">Quick: 1–1024</option>
+                                <option value="1-1000">1–1000</option>
+                                <option value="1-10000">1–10000</option>
+                                <option value="1-65535">All ports (1–65535)</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="customPortsContainer" style="display:none;">
+                            <label class="form-label">Custom Ports</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="customPorts"
+                                   name="custom_ports"
+                                   placeholder="80,443,8080 or 1-1000">
+                            <div class="form-text small">
+                                Comma-separated and/or ranges (e.g. <code>80,443,8000-8100</code>).
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Scan Type</label>
+                            <select class="form-select" id="scanType" name="scan_type">
+                                <option value="tcp">TCP Connect Scan</option>
+                                <!-- If you add SYN or UDP later, you can extend here -->
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Timeout (seconds per port)</label>
+                            <input type="number"
+                                   class="form-control"
+                                   id="timeout"
+                                   name="timeout"
+                                   min="1"
+                                   max="30"
+                                   value="2">
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary" id="startScan">
+                                <i class="bi bi-play-fill me-1"></i>Start Scan
+                            </button>
+                            <button type="button" class="btn btn-outline-danger" id="stopScan" disabled>
+                                <i class="bi bi-stop-fill me-1"></i>Stop
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-activity me-2"></i>Scan Progress
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="scanProgress" style="display:none;">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Scanning ports...</span>
+                            <span id="progressText">0%</span>
+                        </div>
+                        <div class="progress mb-2">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                 id="progressBar"
+                                 style="width:0%"></div>
+                        </div>
+                        <p class="small text-muted mb-0" id="currentPort">Idle</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-check me-2"></i>Results
+                    </h5>
+                    <div class="btn-group btn-group-sm">
+                        <button type="button"
+                                class="btn btn-outline-primary"
+                                id="exportJson"
+                                disabled>
+                            <i class="bi bi-filetype-json me-1"></i>JSON
+                        </button>
+                        <button type="button"
+                                class="btn btn-outline-secondary"
+                                id="exportCsv"
+                                disabled>
+                            <i class="bi bi-filetype-csv me-1"></i>CSV
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="resultsContainer">
+                        <div id="noResults" class="text-center text-muted py-4">
+                            <i class="bi bi-shield-check display-5 d-block mb-2"></i>
+                            <p class="mb-0">No results yet. Configure and start a scan.</p>
+                        </div>
+
+                        <div id="resultsSummary" style="display:none;">
+                            <div class="row g-3 mb-3">
+                                <div class="col-6 col-md-3">
+                                    <div class="summary-stat text-center">
+                                        <h4 id="openPortsCount">0</h4>
+                                        <p class="text-success small mb-0">Open</p>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="summary-stat text-center">
+                                        <h4 id="closedPortsCount">0</h4>
+                                        <p class="text-muted small mb-0">Closed</p>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="summary-stat text-center">
+                                        <h4 id="filteredPortsCount">0</h4>
+                                        <p class="text-warning small mb-0">Filtered</p>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="summary-stat text-center">
+                                        <h4 id="scanDuration">0s</h4>
+                                        <p class="text-info small mb-0">Duration</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive" id="resultsTable" style="display:none;">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Port</th>
+                                            <th>Status</th>
+                                            <th>Service</th>
+                                            <th>Version</th>
+                                            <th>Risk</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="scanResults">
+                                        <!-- Rows added by recon_port.js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div> <!-- /resultsSummary -->
+                    </div> <!-- /resultsContainer -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/recon_port.js') }}"></script>
+{% endblock %}

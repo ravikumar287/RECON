@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+
+{% block title %}WHOIS Lookup{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">Reconnaissance</li>
+<li class="breadcrumb-item active">WHOIS Lookup</li>
+{% endblock %}
+
+{% block content %}
+<div class="scanner-container">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="page-title mb-1">
+                    <i class="bi bi-person-badge me-2"></i>WHOIS Lookup
+                </h1>
+                <p class="text-muted mb-0">
+                    Retrieve domain registration information and basic ownership details.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Configuration -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-gear me-2"></i>Lookup Configuration
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="whoisForm">
+                        <div class="mb-3">
+                            <label class="form-label">Domain <span class="text-danger">*</span></label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="domain"
+                                   name="domain"
+                                   placeholder="example.com"
+                                   required>
+                            <div class="form-text small">
+                                Enter a domain name you are authorized to query.
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search me-1"></i>Lookup WHOIS
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-lightning me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="checkExpiry">
+                            <i class="bi bi-calendar-event me-1"></i>Jump to Expiry
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="checkNameservers">
+                            <i class="bi bi-hdd-network me-1"></i>Jump to Nameservers
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="checkAge">
+                            <i class="bi bi-clock-history me-1"></i>Jump to Domain Age
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-file-text me-2"></i>WHOIS Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="noResults" class="text-center text-muted py-4">
+                        <i class="bi bi-inbox display-5 d-block mb-2"></i>
+                        <p class="mb-0">No WHOIS data yet. Enter a domain and start a lookup.</p>
+                    </div>
+
+                    <div id="whoisResults" style="display:none;">
+                        <!-- Summary -->
+                        <div class="whois-summary mb-4">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="info-card">
+                                        <div class="info-icon bg-primary">
+                                            <i class="bi bi-globe"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <small class="text-muted d-block">Domain</small>
+                                            <h5 class="mb-0" id="domainName">-</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-card">
+                                        <div class="info-icon bg-info">
+                                            <i class="bi bi-building"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <small class="text-muted d-block">Registrar</small>
+                                            <h5 class="mb-0" id="registrar">-</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dates -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-calendar3 me-2"></i>Important Dates
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <div class="date-item">
+                                            <i class="bi bi-calendar-plus text-success"></i>
+                                            <div>
+                                                <small class="text-muted d-block">Created</small>
+                                                <span class="fw-bold d-block" id="creationDate">-</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="date-item">
+                                            <i class="bi bi-calendar-check text-info"></i>
+                                            <div>
+                                                <small class="text-muted d-block">Updated</small>
+                                                <span class="fw-bold d-block" id="updatedDate">-</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="date-item">
+                                            <i class="bi bi-calendar-x text-danger"></i>
+                                            <div>
+                                                <small class="text-muted d-block">Expires</small>
+                                                <span class="fw-bold d-block" id="expirationDate">-</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3" id="domainAgeInfo">
+                                    <div class="alert alert-info mb-0">
+                                        <i class="bi bi-info-circle me-2"></i>
+                                        <span id="ageText">Domain age will be calculated after lookup.</span>
+                                    </div>
+                                </div>
+
+                                <div class="mt-2" id="expiryAlert" style="display:none;">
+                                    <div class="alert alert-warning mb-0">
+                                        <i class="bi bi-exclamation-triangle me-2"></i>
+                                        <span id="expiryText">Expiry information will appear here.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Registrant -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-person me-2"></i>Registrant
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">Organization</label>
+                                        <p id="registrantOrg" class="mb-2">REDACTED</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">Name</label>
+                                        <p id="registrantName" class="mb-2">REDACTED</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">Email</label>
+                                        <p id="registrantEmail" class="mb-2">REDACTED</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">Country</label>
+                                        <p id="registrantCountry" class="mb-2">REDACTED</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">State/Province</label>
+                                        <p id="registrantState" class="mb-2">REDACTED</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-muted small">City</label>
+                                        <p id="registrantCity" class="mb-2">REDACTED</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nameservers -->
+                        <div class="card mb-4" id="nameserversCard">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-hdd-network me-2"></i>Nameservers
+                                </h6>
+                            </div>
+                            <div class="card-body" id="nameserversList">
+                                <!-- Filled by recon_whois.js -->
+                            </div>
+                        </div>
+
+                        <!-- Domain Status -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-shield-check me-2"></i>Domain Status
+                                </h6>
+                            </div>
+                            <div class="card-body" id="statusList">
+                                <!-- Filled by recon_whois.js -->
+                            </div>
+                        </div>
+
+                        <!-- Raw WHOIS -->
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-code me-2"></i>Raw WHOIS Data
+                                </h6>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="copyRaw">
+                                    <i class="bi bi-clipboard me-1"></i>Copy
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <pre id="rawWhoisData" class="bg-dark text-light p-3 rounded small mb-0" style="max-height:300px; overflow-y:auto;">Raw data not available</pre>
+                            </div>
+                        </div>
+                    </div> <!-- /whoisResults -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/recon_whois.js') }}"></script>
+{% endblock %}

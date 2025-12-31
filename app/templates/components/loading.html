@@ -1,0 +1,42 @@
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner">
+        <div class="spinner-container">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="scanner-animation">
+                <i class="bi bi-shield-lock"></i>
+            </div>
+        </div>
+        <p class="loading-text mt-3" id="loadingText">Scanning in progress...</p>
+        <p class="loading-subtext text-muted small" id="loadingSubtext">Please wait while we analyze the target</p>
+        <div class="progress mt-3" style="width: 300px;">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" id="loadingProgress" role="progressbar" style="width: 0%"></div>
+        </div>
+        <p class="loading-percentage mt-2" id="loadingPercentage">0%</p>
+        <button class="btn btn-outline-danger btn-sm mt-3" id="cancelScan" style="display: none;">
+            <i class="bi bi-x-circle me-1"></i>Cancel Scan
+        </button>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer">
+    <!-- Toasts will be dynamically added here -->
+</div>
+
+<!-- Toast Template -->
+<template id="toastTemplate">
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <i class="bi bi-info-circle me-2 toast-icon"></i>
+            <strong class="me-auto toast-title">Notification</strong>
+            <small class="toast-time">Just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">
+            Message goes here
+        </div>
+    </div>
+</template>

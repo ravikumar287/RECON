@@ -1,0 +1,352 @@
+{% extends 'base.html' %}
+
+{% block title %}SQL Injection Scanner{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">Vulnerability Scanning</li>
+<li class="breadcrumb-item active">SQLi Scanner</li>
+{% endblock %}
+
+{% block content %}
+<div class="scanner-container">
+    <!-- Header -->
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="page-title mb-1">
+                    <i class="bi bi-database-exclamation me-2"></i>SQL Injection Scanner
+                </h1>
+                <p class="text-muted mb-0">
+                    Detect SQL injection vulnerabilities in query parameters and forms.
+                </p>
+            </div>
+            <div id="sqliScanTimer" style="display:none;">
+                <span class="badge bg-primary fs-6">
+                    <i class="bi bi-clock me-1"></i>
+                    <span id="sqliScanTimerDisplay">00:00:00</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Config Panel -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-gear me-2"></i>Scan Configuration
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="sqliScanForm">
+                        <div class="mb-3">
+                            <label class="form-label">Target URL <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-globe"></i>
+                                </span>
+                                <input type="text"
+                                       class="form-control"
+                                       id="sqliTarget"
+                                       name="url"
+                                       placeholder="https://example.com/item?id=1"
+                                       required>
+                            </div>
+                            <div class="form-text small">
+                                Use a URL with parameters (e.g. <code>?id=1</code>) to test injection points.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">HTTP Method</label>
+                            <select class="form-select" id="sqliMethod" name="method">
+                                <option value="GET" selected>GET</option>
+                                <option value="POST">POST</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Techniques</label>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="sqliErrorBased"
+                                       name="techniques"
+                                       value="error"
+                                       checked>
+                                <label class="form-check-label" for="sqliErrorBased">
+                                    Error-based
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="sqliBooleanBased"
+                                       name="techniques"
+                                       value="boolean"
+                                       checked>
+                                <label class="form-check-label" for="sqliBooleanBased">
+                                    Boolean-based (blind)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="sqliTimeBased"
+                                       name="techniques"
+                                       value="time"
+                                       checked>
+                                <label class="form-check-label" for="sqliTimeBased">
+                                    Time-based (blind)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="sqliUnionBased"
+                                       name="techniques"
+                                       value="union"
+                                       checked>
+                                <label class="form-check-label" for="sqliUnionBased">
+                                    Union-based
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Options</label>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="sqliTestForms"
+                                       name="test_forms"
+                                       checked>
+                                <label class="form-check-label" for="sqliTestForms">
+                                    Test HTML forms for SQL injection
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="sqliRespectRobots"
+                                       name="respect_robots">
+                                <label class="form-check-label" for="sqliRespectRobots">
+                                    Respect robots.txt while crawling
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary" id="sqliStartBtn">
+                                <i class="bi bi-play-fill me-1"></i>Start SQLi Scan
+                            </button>
+                            <button type="button" class="btn btn-outline-danger" id="sqliStopBtn" disabled>
+                                <i class="bi bi-stop-fill me-1"></i>Stop
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Log -->
+            <div class="card" id="sqliLogCard" style="display:none;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-terminal me-2"></i>Live Log
+                    </h5>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="sqliClearLogBtn">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="live-log" id="sqliLog"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="col-lg-8">
+            <!-- Progress -->
+            <div class="card mb-4" id="sqliProgressCard" style="display:none;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span id="sqliCurrentStatus">Waiting to start...</span>
+                        <span id="sqliProgressText">0%</span>
+                    </div>
+                    <div class="progress" style="height:10px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                             id="sqliProgressBar"
+                             style="width:0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Card -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h5 class="mb-0">
+                        <i class="bi bi-bug me-2"></i>SQLi Findings
+                    </h5>
+                    <div class="btn-group btn-group-sm" id="sqliResultActions" style="display:none;">
+                        <button type="button" class="btn btn-outline-primary" id="sqliDownloadJson">
+                            <i class="bi bi-filetype-json me-1"></i>JSON
+                        </button>
+                        <button type="button" class="btn btn-outline-success" id="sqliDownloadReport">
+                            <i class="bi bi-file-earmark-text me-1"></i>Report
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Empty State -->
+                    <div id="sqliNoResults" class="text-center text-muted py-4">
+                        <i class="bi bi-shield-check display-5 d-block mb-2"></i>
+                        <p class="mb-0">
+                            No results yet. Configure and start a SQLi scan.
+                        </p>
+                    </div>
+
+                    <!-- Results -->
+                    <div id="sqliResultsContainer" style="display:none;">
+                        <!-- Risk & Summary -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <h6 class="text-muted mb-2">Risk Score</h6>
+                                <div class="risk-meter mb-1">
+                                    <div class="risk-meter-fill"
+                                         id="sqliRiskMeterFill"
+                                         style="width:0%;"></div>
+                                    <span class="risk-meter-label"
+                                          id="sqliRiskScore">0</span>
+                                </div>
+                                <span class="badge" id="sqliRiskLevel">Unknown</span>
+                            </div>
+                            <div class="col-md-8">
+                                <h6 class="text-muted mb-2">Severity Breakdown</h6>
+                                <div class="summary-grid">
+                                    <div class="summary-item critical">
+                                        <div class="summary-count" id="sqliCriticalCount">0</div>
+                                        <div class="summary-label">Critical</div>
+                                    </div>
+                                    <div class="summary-item high">
+                                        <div class="summary-count" id="sqliHighCount">0</div>
+                                        <div class="summary-label">High</div>
+                                    </div>
+                                    <div class="summary-item medium">
+                                        <div class="summary-count" id="sqliMediumCount">0</div>
+                                        <div class="summary-label">Medium</div>
+                                    </div>
+                                    <div class="summary-item low">
+                                        <div class="summary-count" id="sqliLowCount">0</div>
+                                        <div class="summary-label">Low</div>
+                                    </div>
+                                    <div class="summary-item info">
+                                        <div class="summary-count" id="sqliInfoCount">0</div>
+                                        <div class="summary-label">Info</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabs -->
+                        <ul class="nav nav-tabs" id="sqliTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#sqliVulnsTab">
+                                    <i class="bi bi-bug me-1"></i>Vulnerabilities
+                                    <span class="badge bg-danger ms-1" id="sqliVulnsBadge">0</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#sqliParamsTab">
+                                    <i class="bi bi-sliders me-1"></i>Parameters Tested
+                                </a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content pt-3">
+                            <!-- Vulns Tab -->
+                            <div class="tab-pane fade show active" id="sqliVulnsTab">
+                                <div class="mb-3" id="sqliVulnFilter">
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button"
+                                                class="btn btn-outline-secondary active"
+                                                data-filter="all">
+                                            All
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-outline-danger"
+                                                data-filter="critical">
+                                            Critical
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-outline-warning"
+                                                data-filter="high">
+                                            High
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-outline-info"
+                                                data-filter="medium">
+                                            Medium
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="sqliVulnsList"></div>
+                            </div>
+
+                            <!-- Parameters Tab -->
+                            <div class="tab-pane fade" id="sqliParamsTab">
+                                <div class="table-responsive" style="max-height:400px; overflow-y:auto;">
+                                    <table class="table table-sm mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Parameter</th>
+                                                <th>Method</th>
+                                                <th>Techniques</th>
+                                                <th>Vulnerable</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="sqliParamsList">
+                                            <!-- Filled by JS (placeholder for now) -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div> <!-- /tab-content -->
+                    </div> <!-- /sqliResultsContainer -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SQLi Vulnerability Modal -->
+<div class="modal fade" id="sqliVulnModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sqliVulnModalTitle">SQL Injection Vulnerability Details</h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="sqliVulnModalBody">
+                <!-- Filled by JS -->
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Close
+                </button>
+                <button type="button" class="btn btn-primary" id="sqliCopyVulnDetails">
+                    <i class="bi bi-clipboard me-1"></i>Copy Details
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/scanner_sqli.js') }}"></script>
+{% endblock %}

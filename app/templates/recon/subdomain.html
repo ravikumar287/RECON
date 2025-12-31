@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+
+{% block title %}Subdomain Enumeration{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">Reconnaissance</li>
+<li class="breadcrumb-item active">Subdomain Enumeration</li>
+{% endblock %}
+
+{% block content %}
+<div class="scanner-container">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="page-title mb-1">
+                    <i class="bi bi-collection me-2"></i>Subdomain Enumeration
+                </h1>
+                <p class="text-muted mb-0">
+                    Discover subdomains for a given domain using wordlists and DNS queries.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Configuration -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-gear me-2"></i>Enumeration Configuration
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="subdomainForm">
+                        <div class="mb-3">
+                            <label class="form-label">Domain <span class="text-danger">*</span></label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="domain"
+                                   name="domain"
+                                   placeholder="example.com"
+                                   required>
+                            <div class="form-text small">
+                                Enter the base domain you are authorized to enumerate.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Wordlist</label>
+                            <select class="form-select" id="wordlist" name="wordlist">
+                                <option value="default">Default (balanced)</option>
+                                <option value="small">Small (faster)</option>
+                                <option value="large">Large (more thorough)</option>
+                                <option value="custom">Custom (paste manually)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="customWordlistContainer" style="display:none;">
+                            <label class="form-label">Custom Entries</label>
+                            <textarea class="form-control"
+                                      id="customWordlist"
+                                      name="custom_wordlist"
+                                      rows="4"
+                                      placeholder="www\napi\nadmin\n..."></textarea>
+                            <div class="form-text small">
+                                One entry per line; combined with DNS resolution logic.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Techniques</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="useCRT" name="use_crt" checked>
+                                <label class="form-check-label" for="useCRT">
+                                    Use Certificate Transparency logs (crt.sh)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="useRecursive" name="recursive">
+                                <label class="form-check-label" for="useRecursive">
+                                    Recursive enumeration on discovered subdomains
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary" id="startScan">
+                                <i class="bi bi-play-fill me-1"></i>Start Enumeration
+                            </button>
+                            <button type="button" class="btn btn-outline-danger" id="stopScan" disabled>
+                                <i class="bi bi-stop-fill me-1"></i>Stop
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="card mt-4" id="statsCard" style="display:none;">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-bar-chart me-2"></i>Statistics
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0 small">
+                        <li class="d-flex justify-content-between">
+                            <span>Subdomains found</span>
+                            <span id="statFound">0</span>
+                        </li>
+                        <li class="d-flex justify-content-between">
+                            <span>Alive (DNS/HTTP)</span>
+                            <span id="statAlive">0</span>
+                        </li>
+                        <li class="d-flex justify-content-between">
+                            <span>With HTTP status</span>
+                            <span id="statHttp">0</span>
+                        </li>
+                        <li class="d-flex justify-content-between">
+                            <span>Duration</span>
+                            <span id="statDuration">0s</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="col-lg-8">
+            <!-- Progress -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-activity me-2"></i>Progress
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="scanProgress" style="display:none;">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Enumerating subdomains...</span>
+                            <span id="progressText">0%</span>
+                        </div>
+                        <div class="progress mb-2">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                 id="progressBar"
+                                 style="width:0%"></div>
+                        </div>
+                        <p class="small text-muted mb-0" id="currentStatus">Idle</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Table -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-check me-2"></i>Discovered Subdomains
+                    </h5>
+                    <div class="btn-group btn-group-sm">
+                        <button type="button" class="btn btn-outline-secondary active" id="filterAll">
+                            All
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" id="filterAlive">
+                            Alive Only
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" id="exportResults" disabled>
+                            <i class="bi bi-download me-1"></i>Export
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="noResults" class="text-center text-muted py-4">
+                        <i class="bi bi-inbox display-5 d-block mb-2"></i>
+                        <p class="mb-0">No results yet. Configure and start enumeration.</p>
+                    </div>
+
+                    <div id="wildcardWarning" class="alert alert-warning small mt-2" style="display:none;">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Wildcard DNS appears to be enabled on this domain. Some results may be false positives.
+                    </div>
+
+                    <div class="table-responsive mt-3" id="resultsContainer" style="display:none;">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Subdomain</th>
+                                    <th>IP(s)</th>
+                                    <th>Status</th>
+                                    <th>HTTP</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="subdomainResults">
+                                <!-- Filled by recon_subdomain.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div> <!-- /card -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/recon_subdomain.js') }}"></script>
+{% endblock %}

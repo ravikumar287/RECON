@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="home-container">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="hero-content text-center">
+            <div class="hero-icon">
+                <i class="bi bi-shield-lock-fill"></i>
+            </div>
+            <h1 class="hero-title">VulnScanner</h1>
+            <p class="hero-subtitle">
+                Security Assessment &amp; Information Gathering Toolkit
+            </p>
+            <p class="hero-description text-muted mb-4">
+                Run authorized security scans against your own infrastructure and applications.
+            </p>
+
+            <!-- Quick Target Input: simple GET redirect to Full Scan -->
+            <div class="quick-scan-box">
+                <form class="d-flex gap-2"
+                      method="get"
+                      action="{{ url_for('scanner.full_scan_page') }}">
+                    <input type="text"
+                           class="form-control form-control-lg"
+                           name="target"
+                           placeholder="Enter target URL or IP address"
+                           required>
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-search me-1"></i>Scan
+                    </button>
+                </form>
+                <div class="form-text text-center mt-2">
+                    The target will open in the Full Scan page with your chosen configuration.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Grid (no fake numbers) -->
+    <div class="features-section mt-5">
+        <h2 class="section-title text-center mb-4">
+            <i class="bi bi-grid me-2"></i>Modules
+        </h2>
+
+        <div class="row g-4">
+            <!-- Recon -->
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon bg-primary">
+                        <i class="bi bi-diagram-3"></i>
+                    </div>
+                    <h5>Port Scan</h5>
+                    <p class="text-muted small">
+                        Discover open ports and services on target hosts.
+                    </p>
+                    <a href="{{ url_for('recon.port_scan_page') }}" class="btn btn-outline-primary btn-sm">
+                        Open <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon bg-info">
+                        <i class="bi bi-globe"></i>
+                    </div>
+                    <h5>DNS Intelligence</h5>
+                    <p class="text-muted small">
+                        Enumerate DNS records and gather infrastructure intel.
+                    </p>
+                    <a href="{{ url_for('recon.dns_lookup_page') }}" class="btn btn-outline-info btn-sm">
+                        Open <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon bg-success">
+                        <i class="bi bi-collection"></i>
+                    </div>
+                    <h5>Subdomains</h5>
+                    <p class="text-muted small">
+                        Discover subdomains using wordlists and DNS techniques.
+                    </p>
+                    <a href="{{ url_for('recon.subdomain_page') }}" class="btn btn-outline-success btn-sm">
+                        Open <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon bg-warning">
+                        <i class="bi bi-cpu"></i>
+                    </div>
+                    <h5>Tech Detection</h5>
+                    <p class="text-muted small">
+                        Identify server software, frameworks, CMS, and more.
+                    </p>
+                    <a href="{{ url_for('recon.tech_detect_page') }}" class="btn btn-outline-warning btn-sm">
+                        Open <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Vulnerabilities -->
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon bg-danger">
+                        <i class="bi bi-shield-exclamation"></i>
+                    </div>
+                    <h5>Full Scan</h5>
+                    <p class="text-muted small">
+                        Combined recon + vulnerability tests in a single workflow.
+                    </p>
+                    <a href="{{ url_for('scanner.full_scan_page') }}" class="btn btn-outline-danger btn-sm">
+                        Open <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:#8b5cf6;">
+                        <i class="bi bi-code-slash"></i>
+                    </div>
+                    <h5>XSS Scanner</h5>
+                    <p class="text-muted small">
+                        Detect Cross-Site Scripting issues in parameters and forms.
+                    </p>
+                    <a href="{{ url_for('scanner.xss_scan_page') }}" class="btn btn-outline-secondary btn-sm">
+                        Open <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:#f97316;">
+                        <i class="bi bi-database-exclamation"></i>
+                    </div>
+                    <h5>SQLi Scanner</h5>
+                    <p class="text-muted small">
+                        Detect SQL injection vulnerabilities in query parameters.
+                    </p>
+                    <a href="{{ url_for('scanner.sqli_scan_page') }}" class="btn btn-outline-secondary btn-sm">
+                        Open <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:#14b8a6;">
+                        <i class="bi bi-folder2-open"></i>
+                    </div>
+                    <h5>Dir Bruteforce</h5>
+                    <p class="text-muted small">
+                        Find hidden directories, files, and exposed resources.
+                    </p>
+                    <a href="{{ url_for('scanner.dir_scan_page') }}" class="btn btn-outline-secondary btn-sm">
+                        Open <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legal Info -->
+    <div class="mt-5">
+        <div class="alert alert-warning d-flex align-items-center" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-3"></i>
+            <div class="small">
+                Only use VulnScanner on systems you own or have explicit written permission to test.
+                Unauthorized scanning may be illegal in your jurisdiction.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

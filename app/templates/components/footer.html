@@ -1,0 +1,15 @@
+<!-- Footer -->
+<footer class="main-footer">
+    <div class="footer-content">
+        <div class="footer-left">
+            <span class="small text-muted">
+                &copy; {{ current_year|default(2024) }} VulnScanner. For authorized security testing only.
+            </span>
+        </div>
+        <div class="footer-right d-flex gap-3">
+            <a href="{{ url_for('main.about') }}" class="footer-link small">About</a>
+            <a href="#" class="footer-link small">Documentation</a>
+            <a href="#" class="footer-link small">Support</a>
+        </div>
+    </div>
+</footer>

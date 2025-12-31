@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+
+{% block title %}Technology Detection{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">Reconnaissance</li>
+<li class="breadcrumb-item active">Tech Detection</li>
+{% endblock %}
+
+{% block content %}
+<div class="scanner-container">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="page-title mb-1">
+                    <i class="bi bi-cpu me-2"></i>Technology Detection
+                </h1>
+                <p class="text-muted mb-0">
+                    Identify servers, frameworks, CMS, and other technologies behind a given web application.
+                </p>
+            </div>
+            <div id="techDetectTimer" style="display:none;">
+                <span class="badge bg-primary fs-6">
+                    <i class="bi bi-clock me-1"></i>
+                    <span id="techDetectTimerDisplay">00:00:00</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Configuration -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-gear me-2"></i>Detection Configuration
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="techDetectForm">
+                        <div class="mb-3">
+                            <label class="form-label">Target URL <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-globe"></i>
+                                </span>
+                                <input type="url"
+                                       class="form-control"
+                                       id="techDetectUrl"
+                                       name="url"
+                                       placeholder="https://example.com"
+                                       required>
+                            </div>
+                            <div class="form-text small">
+                                Enter the main URL of the application you want to fingerprint.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Detection Methods</label>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="techDetectHeaders"
+                                       name="headers"
+                                       checked>
+                                <label class="form-check-label" for="techDetectHeaders">
+                                    HTTP header analysis
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="techDetectHtml"
+                                       name="html"
+                                       checked>
+                                <label class="form-check-label" for="techDetectHtml">
+                                    HTML &amp; DOM inspection
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="techDetectJs"
+                                       name="javascript"
+                                       checked>
+                                <label class="form-check-label" for="techDetectJs">
+                                    JavaScript &amp; asset analysis
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Options</label>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="techDetectFollowRedirects"
+                                       name="follow_redirects"
+                                       checked>
+                                <label class="form-check-label" for="techDetectFollowRedirects">
+                                    Follow redirects
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" id="techDetectStartBtn">
+                                <i class="bi bi-search me-1"></i>Detect Technologies
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clipboard-data me-2"></i>Detected Technologies
+                    </h5>
+                    <div class="btn-group btn-group-sm" id="techDetectResultActions" style="display:none;">
+                        <button type="button"
+                                class="btn btn-outline-primary"
+                                id="techDetectDownloadJson">
+                            <i class="bi bi-filetype-json me-1"></i>JSON
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="techDetectNoResults" class="text-center text-muted py-4">
+                        <i class="bi bi-cpu display-5 d-block mb-2"></i>
+                        <p class="mb-0">No results yet. Enter a URL and detect technologies.</p>
+                    </div>
+
+                    <div id="techDetectResultsContainer" style="display:none;">
+                        <!-- Summary -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <h6 class="text-muted mb-2">Summary</h6>
+                                <ul class="list-unstyled mb-0 small">
+                                    <li class="d-flex justify-content-between">
+                                        <span>Total technologies</span>
+                                        <span id="techDetectTotalTech">0</span>
+                                    </li>
+                                    <li class="d-flex justify-content-between">
+                                        <span>Categories</span>
+                                        <span id="techDetectTotalCategories">0</span>
+                                    </li>
+                                    <li class="d-flex justify-content-between">
+                                        <span>With version</span>
+                                        <span id="techDetectWithVersion">0</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-8">
+                                <h6 class="text-muted mb-2">Quick Summary</h6>
+                                <div id="techDetectQuickSummary"
+                                     class="d-flex flex-wrap gap-2">
+                                    <!-- Summary badges filled by JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Technologies by Category -->
+                        <div id="techDetectByCategory">
+                            <!-- Category sections filled by JS -->
+                        </div>
+
+                        <!-- Raw Headers -->
+                        <div class="mt-4">
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-secondary"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#techDetectRawHeaders">
+                                <i class="bi bi-code me-1"></i>View Raw Headers
+                            </button>
+                            <div class="collapse mt-3" id="techDetectRawHeaders">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <pre id="techDetectRawHeadersContent"
+                                             class="bg-dark text-light p-3 rounded mb-0"
+                                             style="max-height:300px; overflow-y:auto; font-size:0.85rem;"></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> <!-- /techDetectResultsContainer -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/scanner_tech_detect.js') }}"></script>
+{% endblock %}

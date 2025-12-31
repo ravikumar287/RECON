@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+
+{% block title %}SSL/TLS Analysis{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">Reconnaissance</li>
+<li class="breadcrumb-item active">SSL/TLS Check</li>
+{% endblock %}
+
+{% block content %}
+<div class="scanner-container">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="page-title mb-1">
+                    <i class="bi bi-lock me-2"></i>SSL/TLS Analysis
+                </h1>
+                <p class="text-muted mb-0">
+                    Analyze certificate details, supported protocols, cipher suites, and known SSL/TLS issues.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Configuration -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-gear me-2"></i>Analysis Configuration
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="sslForm">
+                        <div class="mb-3">
+                            <label class="form-label">Hostname <span class="text-danger">*</span></label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="host"
+                                   name="host"
+                                   placeholder="example.com"
+                                   required>
+                            <div class="form-text small">
+                                Enter hostname (without protocol) you are authorized to test.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Port</label>
+                            <input type="number"
+                                   class="form-control"
+                                   id="port"
+                                   name="port"
+                                   min="1"
+                                   max="65535"
+                                   value="443">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Checks</label>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="checkChain"
+                                       name="check_chain"
+                                       checked>
+                                <label class="form-check-label" for="checkChain">
+                                    Verify certificate chain
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="checkCiphers"
+                                       name="check_ciphers"
+                                       checked>
+                                <label class="form-check-label" for="checkCiphers">
+                                    Analyze cipher suites
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="checkVulns"
+                                       name="check_vulns"
+                                       checked>
+                                <label class="form-check-label" for="checkVulns">
+                                    Check for known SSL/TLS vulnerabilities
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search me-1"></i>Analyze SSL/TLS
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="col-lg-8">
+            <!-- Grade -->
+            <div class="card mb-4" id="gradeCard" style="display:none;">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-3 text-center">
+                            <div class="grade-circle" id="gradeCircle">
+                                <span class="grade-value" id="gradeValue">-</span>
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <h5 class="mb-1">SSL/TLS Grade</h5>
+                            <p class="text-muted mb-3">
+                                The grade is based on certificate validity, protocol selection,
+                                key strength, cipher suites, and known vulnerabilities.
+                            </p>
+                            <div class="row g-2">
+                                <div class="col-3">
+                                    <div class="mini-stat text-center">
+                                        <i class="bi bi-file-earmark-check text-primary d-block mb-1"></i>
+                                        <small>Certificate</small>
+                                        <span id="certStatus" class="d-block">-</span>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="mini-stat text-center">
+                                        <i class="bi bi-shield-check text-success d-block mb-1"></i>
+                                        <small>Protocol</small>
+                                        <span id="protocolStatus" class="d-block">-</span>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="mini-stat text-center">
+                                        <i class="bi bi-key text-info d-block mb-1"></i>
+                                        <small>Key</small>
+                                        <span id="keyStatus" class="d-block">-</span>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="mini-stat text-center">
+                                        <i class="bi bi-lock text-warning d-block mb-1"></i>
+                                        <small>Ciphers</small>
+                                        <span id="cipherStatus" class="d-block">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis Details -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h5 class="mb-0">
+                        <i class="bi bi-shield-lock me-2"></i>Analysis Results
+                    </h5>
+                    <button type="button"
+                            class="btn btn-outline-primary btn-sm"
+                            id="exportSsl"
+                            disabled>
+                        <i class="bi bi-filetype-json me-1"></i>Export JSON
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="noResults" class="text-center text-muted py-4">
+                        <i class="bi bi-inbox display-5 d-block mb-2"></i>
+                        <p class="mb-0">No results yet. Enter a hostname and analyze SSL/TLS.</p>
+                    </div>
+
+                    <div id="resultsContainer" style="display:none;">
+                        <ul class="nav nav-tabs" id="sslTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#certTab">
+                                    <i class="bi bi-file-earmark-check me-1"></i>Certificate
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#protocolTab">
+                                    <i class="bi bi-shield me-1"></i>Protocols
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#cipherTab">
+                                    <i class="bi bi-key me-1"></i>Ciphers
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#vulnTab">
+                                    <i class="bi bi-bug me-1"></i>Vulnerabilities
+                                </a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content pt-3">
+                            <div class="tab-pane fade show active" id="certTab">
+                                <div id="certInfo">
+                                    <!-- Filled by recon_ssl.js -->
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="protocolTab">
+                                <div id="protocolInfo"></div>
+                            </div>
+                            <div class="tab-pane fade" id="cipherTab">
+                                <div id="cipherInfo"></div>
+                            </div>
+                            <div class="tab-pane fade" id="vulnTab">
+                                <div id="vulnInfo"></div>
+                            </div>
+                        </div> <!-- /tab-content -->
+                    </div> <!-- /resultsContainer -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/recon_ssl.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+
+{% block title %}DNS Lookup{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">Reconnaissance</li>
+<li class="breadcrumb-item active">DNS Lookup</li>
+{% endblock %}
+
+{% block content %}
+<div class="scanner-container">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="page-title mb-1">
+                    <i class="bi bi-globe me-2"></i>DNS Lookup
+                </h1>
+                <p class="text-muted mb-0">
+                    Query DNS records for a domain to gather infrastructure information.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Configuration -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-gear me-2"></i>Lookup Configuration
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="dnsLookupForm">
+                        <div class="mb-3">
+                            <label class="form-label">Domain <span class="text-danger">*</span></label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="domain"
+                                   name="domain"
+                                   placeholder="example.com"
+                                   required>
+                            <div class="form-text small">
+                                Enter the root domain you are authorized to query.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Record Types</label>
+                            <div class="record-types-grid">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="recA" name="records" value="A" checked>
+                                    <label class="form-check-label" for="recA">A</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="recAAAA" name="records" value="AAAA" checked>
+                                    <label class="form-check-label" for="recAAAA">AAAA</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="recMX" name="records" value="MX" checked>
+                                    <label class="form-check-label" for="recMX">MX</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="recNS" name="records" value="NS" checked>
+                                    <label class="form-check-label" for="recNS">NS</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="recTXT" name="records" value="TXT" checked>
+                                    <label class="form-check-label" for="recTXT">TXT</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="recCNAME" name="records" value="CNAME">
+                                    <label class="form-check-label" for="recCNAME">CNAME</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="recSOA" name="records" value="SOA">
+                                    <label class="form-check-label" for="recSOA">SOA</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search me-1"></i>Lookup
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-check me-2"></i>Results Overview
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="noResults" class="text-center text-muted py-4">
+                        <i class="bi bi-inbox display-5 d-block mb-2"></i>
+                        <p class="mb-0">No results yet. Enter a domain and start a lookup.</p>
+                    </div>
+
+                    <div id="dnsResults" style="display:none;">
+                        <div class="row g-3 mb-3">
+                            <div class="col-6 col-md-3">
+                                <div class="summary-stat text-center">
+                                    <h4 id="totalRecords">0</h4>
+                                    <p class="small text-muted mb-0">Total Records</p>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="summary-stat text-center">
+                                    <h4 id="recordTypesFound">0</h4>
+                                    <p class="small text-muted mb-0">Record Types</p>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="summary-stat text-center">
+                                    <h4 id="nameserverCount">0</h4>
+                                    <p class="small text-muted mb-0">Nameservers</p>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="summary-stat text-center">
+                                    <h4 id="mailServerCount">0</h4>
+                                    <p class="small text-muted mb-0">Mail Servers</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Accordion for record types -->
+                        <div class="accordion" id="dnsRecordsAccordion">
+                            <!-- A Records -->
+                            <div class="accordion-item" id="aRecordsItem" style="display:none;">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#aRecords">
+                                        A Records
+                                        <span class="badge bg-primary ms-2" id="aRecordsCount">0</span>
+                                    </button>
+                                </h2>
+                                <div id="aRecords" class="accordion-collapse collapse show">
+                                    <div class="accordion-body">
+                                        <table class="table table-sm mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>IP Address</th>
+                                                    <th>TTL</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="aRecordsBody"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- MX Records -->
+                            <div class="accordion-item" id="mxRecordsItem" style="display:none;">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#mxRecords">
+                                        MX Records
+                                        <span class="badge bg-info ms-2" id="mxRecordsCount">0</span>
+                                    </button>
+                                </h2>
+                                <div id="mxRecords" class="accordion-collapse collapse">
+                                    <div class="accordion-body">
+                                        <table class="table table-sm mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Priority</th>
+                                                    <th>Mail Server</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="mxRecordsBody"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- NS Records -->
+                            <div class="accordion-item" id="nsRecordsItem" style="display:none;">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#nsRecords">
+                                        NS Records
+                                        <span class="badge bg-success ms-2" id="nsRecordsCount">0</span>
+                                    </button>
+                                </h2>
+                                <div id="nsRecords" class="accordion-collapse collapse">
+                                    <div class="accordion-body">
+                                        <table class="table table-sm mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Nameserver</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="nsRecordsBody"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TXT Records -->
+                            <div class="accordion-item" id="txtRecordsItem" style="display:none;">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#txtRecords">
+                                        TXT Records
+                                        <span class="badge bg-warning ms-2" id="txtRecordsCount">0</span>
+                                    </button>
+                                </h2>
+                                <div id="txtRecords" class="accordion-collapse collapse">
+                                    <div class="accordion-body" id="txtRecordsBody"></div>
+                                </div>
+                            </div>
+
+                            <!-- SOA Record -->
+                            <div class="accordion-item" id="soaRecordsItem" style="display:none;">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#soaRecords">
+                                        SOA Record
+                                    </button>
+                                </h2>
+                                <div id="soaRecords" class="accordion-collapse collapse">
+                                    <div class="accordion-body" id="soaRecordsBody"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Security Checks -->
+                        <div class="card mt-4" id="securityChecks" style="display:none;">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="bi bi-shield-check me-2"></i>Security Checks
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <div class="security-check" id="spfCheck">
+                                            <i class="bi bi-circle text-muted"></i>
+                                            <span>SPF Record</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="security-check" id="dmarcCheck">
+                                            <i class="bi bi-circle text-muted"></i>
+                                            <span>DMARC Record</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="security-check" id="dnssecCheck">
+                                            <i class="bi bi-circle text-muted"></i>
+                                            <span>DNSSEC</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Export -->
+                        <div class="mt-3 text-end">
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="exportDns" disabled>
+                                <i class="bi bi-download me-1"></i>Export JSON
+                            </button>
+                        </div>
+                    </div> <!-- /dnsResults -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/recon_dns.js') }}"></script>
+{% endblock %}

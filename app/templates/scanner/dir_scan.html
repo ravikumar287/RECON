@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+
+{% block title %}Directory Bruteforce{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">Vulnerability Scanning</li>
+<li class="breadcrumb-item active">Directory Bruteforce</li>
+{% endblock %}
+
+{% block content %}
+<div class="scanner-container">
+    <!-- Header -->
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="page-title mb-1">
+                    <i class="bi bi-folder2-open me-2"></i>Directory Bruteforce
+                </h1>
+                <p class="text-muted mb-0">
+                    Discover hidden directories, files, backups, and sensitive endpoints.
+                </p>
+            </div>
+            <div id="dirScanTimer" style="display:none;">
+                <span class="badge bg-primary fs-6">
+                    <i class="bi bi-clock me-1"></i>
+                    <span id="dirScanTimerDisplay">00:00:00</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Config Panel -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-gear me-2"></i>Scan Configuration
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="dirScanForm">
+                        <div class="mb-3">
+                            <label class="form-label">Base URL <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-globe"></i></span>
+                                <input type="text"
+                                       class="form-control"
+                                       id="dirTarget"
+                                       name="url"
+                                       placeholder="https://example.com"
+                                       required>
+                            </div>
+                            <div class="form-text small">
+                                Enter the base URL (no path) to scan for directories/files.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Wordlist</label>
+                            <select class="form-select" id="dirWordlist" name="wordlist">
+                                <option value="default">Default</option>
+                                <option value="small">Small (faster)</option>
+                                <option value="large">Large (more thorough)</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="dirCustomWordlistContainer" style="display:none;">
+                            <label class="form-label">Custom Entries</label>
+                            <textarea class="form-control"
+                                      id="dirCustomWordlist"
+                                      name="custom_wordlist"
+                                      rows="4"
+                                      placeholder="admin\nlogin\nbackup\n..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">File Extensions</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="dirExtensions"
+                                   name="extensions"
+                                   placeholder=".php,.html,.bak,.txt">
+                            <div class="form-text small">
+                                Comma-separated list of extensions to test (optional).
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Options</label>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="dirRecursive"
+                                       name="recursive">
+                                <label class="form-check-label" for="dirRecursive">
+                                    Recursive scan (follow discovered directories)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="dirSensitive"
+                                       name="sensitive"
+                                       checked>
+                                <label class="form-check-label" for="dirSensitive">
+                                    Include checks for sensitive and backup files
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary" id="dirStartBtn">
+                                <i class="bi bi-play-fill me-1"></i>Start Directory Scan
+                            </button>
+                            <button type="button" class="btn btn-outline-danger" id="dirStopBtn" disabled>
+                                <i class="bi bi-stop-fill me-1"></i>Stop
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Live Log -->
+            <div class="card" id="dirLogCard" style="display:none;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-terminal me-2"></i>Live Log
+                    </h5>
+                    <button type="button"
+                            class="btn btn-sm btn-outline-secondary"
+                            id="dirClearLogBtn">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="live-log" id="dirLog"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="col-lg-8">
+            <!-- Progress -->
+            <div class="card mb-4" id="dirProgressCard" style="display:none;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span id="dirCurrentStatus">Waiting to start...</span>
+                        <span id="dirProgressText">0%</span>
+                    </div>
+                    <div class="progress" style="height:10px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                             id="dirProgressBar"
+                             style="width:0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Card -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h5 class="mb-0">
+                        <i class="bi bi-folder2-open me-2"></i>Discovered Paths
+                    </h5>
+                    <div class="btn-group btn-group-sm" id="dirResultActions" style="display:none;">
+                        <button type="button"
+                                class="btn btn-outline-primary"
+                                id="dirDownloadList">
+                            <i class="bi bi-download me-1"></i>Export
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Empty State -->
+                    <div id="dirNoResults" class="text-center text-muted py-4">
+                        <i class="bi bi-shield-check display-5 d-block mb-2"></i>
+                        <p class="mb-0">
+                            No results yet. Configure and start a directory scan.
+                        </p>
+                    </div>
+
+                    <!-- Summary & Filters -->
+                    <div id="dirResultsContainer" style="display:none;">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-2">Severity Summary</h6>
+                                <div class="summary-grid">
+                                    <div class="summary-item critical">
+                                        <div class="summary-count" id="dirCriticalCount">0</div>
+                                        <div class="summary-label">Critical</div>
+                                    </div>
+                                    <div class="summary-item high">
+                                        <div class="summary-count" id="dirHighCount">0</div>
+                                        <div class="summary-label">High</div>
+                                    </div>
+                                    <div class="summary-item medium">
+                                        <div class="summary-count" id="dirMediumCount">0</div>
+                                        <div class="summary-label">Medium</div>
+                                    </div>
+                                    <div class="summary-item low">
+                                        <div class="summary-count" id="dirLowCount">0</div>
+                                        <div class="summary-label">Low</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-2">Statistics</h6>
+                                <ul class="list-unstyled mb-0 small">
+                                    <li class="d-flex justify-content-between">
+                                        <span>Total requests</span>
+                                        <span id="dirTotalRequests">0</span>
+                                    </li>
+                                    <li class="d-flex justify-content-between">
+                                        <span>Paths found</span>
+                                        <span id="dirTotalFound">0</span>
+                                    </li>
+                                    <li class="d-flex justify-content-between">
+                                        <span>Errors</span>
+                                        <span id="dirTotalErrors">0</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Filter -->
+                        <div class="mb-3" id="dirFilter">
+                            <div class="btn-group btn-group-sm">
+                                <button type="button"
+                                        class="btn btn-outline-secondary active"
+                                        data-filter="all">
+                                    All
+                                </button>
+                                <button type="button"
+                                        class="btn btn-outline-danger"
+                                        data-filter="critical">
+                                    Critical
+                                </button>
+                                <button type="button"
+                                        class="btn btn-outline-warning"
+                                        data-filter="high">
+                                    High
+                                </button>
+                                <button type="button"
+                                        class="btn btn-outline-info"
+                                        data-filter="medium">
+                                    Medium
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Table -->
+                        <div class="table-responsive" style="max-height:400px; overflow-y:auto;">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Path</th>
+                                        <th>Status</th>
+                                        <th>Size</th>
+                                        <th>Severity</th>
+                                        <th>Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dirPathsList">
+                                    <!-- Filled by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> <!-- /dirResultsContainer -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/scanner_dir.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,137 @@
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="logo">
+            <i class="bi bi-shield-lock-fill"></i>
+            <span>VulnScanner</span>
+        </div>
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <i class="bi bi-list"></i>
+        </button>
+    </div>
+    
+    <nav class="sidebar-nav">
+        <ul class="nav flex-column">
+            <!-- Dashboard -->
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.endpoint == 'main.dashboard' }}" href="{{ url_for('main.dashboard') }}">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            
+            <!-- Reconnaissance Section -->
+            <li class="nav-section">
+                <span class="nav-section-title">Reconnaissance</span>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.endpoint == 'recon.port_scan_page' }}" href="{{ url_for('recon.port_scan_page') }}">
+                    <i class="bi bi-diagram-3"></i>
+                    <span>Port Scanner</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.endpoint == 'recon.dns_lookup_page' }}" href="{{ url_for('recon.dns_lookup_page') }}">
+                    <i class="bi bi-globe"></i>
+                    <span>DNS Lookup</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.endpoint == 'recon.whois_page' }}" href="{{ url_for('recon.whois_page') }}">
+                    <i class="bi bi-person-badge"></i>
+                    <span>WHOIS Lookup</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.endpoint == 'recon.subdomain_page' }}" href="{{ url_for('recon.subdomain_page') }}">
+                    <i class="bi bi-collection"></i>
+                    <span>Subdomain Enum</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.endpoint == 'recon.headers_page' }}" href="{{ url_for('recon.headers_page') }}">
+                    <i class="bi bi-file-earmark-code"></i>
+                    <span>HTTP Headers</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.endpoint == 'recon.ssl_check_page' }}" href="{{ url_for('recon.ssl_check_page') }}">
+                    <i class="bi bi-lock"></i>
+                    <span>SSL/TLS Check</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.endpoint == 'recon.tech_detect_page' }}" href="{{ url_for('recon.tech_detect_page') }}">
+                    <i class="bi bi-cpu"></i>
+                    <span>Tech Detection</span>
+                </a>
+            </li>
+            
+            <!-- Vulnerability Scanning Section -->
+            <li class="nav-section">
+                <span class="nav-section-title">Vulnerability Scanning</span>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.endpoint == 'scanner.full_scan_page' }}" href="{{ url_for('scanner.full_scan_page') }}">
+                    <i class="bi bi-shield-exclamation"></i>
+                    <span>Full Scan</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.endpoint == 'scanner.xss_scan_page' }}" href="{{ url_for('scanner.xss_scan_page') }}">
+                    <i class="bi bi-code-slash"></i>
+                    <span>XSS Scanner</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.endpoint == 'scanner.sqli_scan_page' }}" href="{{ url_for('scanner.sqli_scan_page') }}">
+                    <i class="bi bi-database-exclamation"></i>
+                    <span>SQLi Scanner</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.endpoint == 'scanner.dir_scan_page' }}" href="{{ url_for('scanner.dir_scan_page') }}">
+                    <i class="bi bi-folder2-open"></i>
+                    <span>Directory Bruteforce</span>
+                </a>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.endpoint == 'scanner.security_headers_page' }}" href="{{ url_for('scanner.security_headers_page') }}">
+                    <i class="bi bi-shield-check"></i>
+                    <span>Security Headers</span>
+                </a>
+            </li>
+            
+            <!-- Reports Section -->
+            <li class="nav-section">
+                <span class="nav-section-title">Reports</span>
+            </li>
+            
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.endpoint == 'scanner.scan_history_page' }}" href="{{ url_for('scanner.scan_history_page') }}">
+                    <i class="bi bi-clock-history"></i>
+                    <span>Scan History</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    
+    <div class="sidebar-footer">
+        <a href="{{ url_for('main.settings') }}" class="settings-link">
+            <i class="bi bi-gear"></i>
+            <span>Settings</span>
+        </a>
+    </div>
+</div>

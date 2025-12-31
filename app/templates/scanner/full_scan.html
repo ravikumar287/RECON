@@ -1,0 +1,483 @@
+{% extends 'base.html' %}
+
+{% block title %}Full Vulnerability Scan{% endblock %}
+
+{% block breadcrumb %}
+<li class="breadcrumb-item">Vulnerability Scanning</li>
+<li class="breadcrumb-item active">Full Scan</li>
+{% endblock %}
+
+{% block content %}
+<div class="scanner-container">
+    <!-- Header -->
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="page-title mb-1">
+                    <i class="bi bi-shield-exclamation me-2"></i>Full Vulnerability Scan
+                </h1>
+                <p class="text-muted mb-0">
+                    Run a complete assessment combining reconnaissance and vulnerability checks.
+                </p>
+            </div>
+            <div id="fullScanTimer" style="display:none;">
+                <span class="badge bg-primary fs-6">
+                    <i class="bi bi-clock me-1"></i>
+                    <span id="fullScanTimerDisplay">00:00:00</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Config Panel -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-gear me-2"></i>Scan Configuration
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="fullScanForm">
+                        <div class="mb-3">
+                            <label class="form-label">Target URL <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-globe"></i>
+                                </span>
+                                <input type="text"
+                                       class="form-control"
+                                       id="fullScanTarget"
+                                       name="target"
+                                       placeholder="https://example.com"
+                                       required
+                                       value="{{ request.args.get('target', '') }}">
+                            </div>
+                            <div class="form-text small">
+                                Enter a full URL, including protocol, that you are authorized to scan.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Scan Profile</label>
+                            <select class="form-select" id="fullScanProfile" name="profile">
+                                <option value="full">Full Scan (all modules)</option>
+                                <option value="quick">Quick Scan</option>
+                                <option value="passive">Passive (non-intrusive)</option>
+                                <option value="aggressive">Aggressive (more thorough)</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="fullScanCustomModules" style="display:none;">
+                            <label class="form-label">Modules</label>
+                            <div class="row g-1">
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               id="modPortScan"
+                                               name="modules"
+                                               value="port_scan"
+                                               checked>
+                                        <label class="form-check-label" for="modPortScan">
+                                            Port Scan
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               id="modSubdomains"
+                                               name="modules"
+                                               value="subdomains"
+                                               checked>
+                                        <label class="form-check-label" for="modSubdomains">
+                                            Subdomains
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               id="modXSS"
+                                               name="modules"
+                                               value="xss"
+                                               checked>
+                                        <label class="form-check-label" for="modXSS">
+                                            XSS
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               id="modSQLI"
+                                               name="modules"
+                                               value="sqli"
+                                               checked>
+                                        <label class="form-check-label" for="modSQLI">
+                                            SQLi
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               id="modDirs"
+                                               name="modules"
+                                               value="dir_scan"
+                                               checked>
+                                        <label class="form-check-label" for="modDirs">
+                                            Dir Scan
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               id="modHeaders"
+                                               name="modules"
+                                               value="headers"
+                                               checked>
+                                        <label class="form-check-label" for="modHeaders">
+                                            Headers
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Crawl Depth</label>
+                            <input type="range"
+                                   class="form-range"
+                                   id="fullScanCrawlDepth"
+                                   name="crawl_depth"
+                                   min="1"
+                                   max="5"
+                                   value="2">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">Shallow</small>
+                                <small class="text-muted" id="fullScanCrawlDepthValue">2</small>
+                                <small class="text-muted">Deep</small>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Options</label>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="fullScanFollowRedirects"
+                                       name="follow_redirects"
+                                       checked>
+                                <label class="form-check-label" for="fullScanFollowRedirects">
+                                    Follow redirects
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="fullScanRespectRobots"
+                                       name="respect_robots"
+                                       checked>
+                                <label class="form-check-label" for="fullScanRespectRobots">
+                                    Respect robots.txt
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary" id="fullScanStartBtn">
+                                <i class="bi bi-play-fill me-1"></i>Start Full Scan
+                            </button>
+                            <button type="button" class="btn btn-outline-danger" id="fullScanStopBtn" disabled>
+                                <i class="bi bi-stop-fill me-1"></i>Stop
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Live Log -->
+            <div class="card" id="fullScanLogCard" style="display:none;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-terminal me-2"></i>Live Log
+                    </h5>
+                    <button type="button"
+                            class="btn btn-sm btn-outline-secondary"
+                            id="fullScanClearLogBtn">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="live-log" id="fullScanLog"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="col-lg-8">
+            <!-- Stages & Progress -->
+            <div class="card mb-4" id="fullScanStagesCard" style="display:none;">
+                <div class="card-body">
+                    <div class="scan-stages" id="fullScanStages">
+                        <div class="scan-stage" data-stage="init">
+                            <div class="stage-icon"><i class="bi bi-play"></i></div>
+                            <span class="stage-label">Init</span>
+                        </div>
+                        <div class="scan-stage" data-stage="recon">
+                            <div class="stage-icon"><i class="bi bi-search"></i></div>
+                            <span class="stage-label">Recon</span>
+                        </div>
+                        <div class="scan-stage" data-stage="crawl">
+                            <div class="stage-icon"><i class="bi bi-diagram-2"></i></div>
+                            <span class="stage-label">Crawl</span>
+                        </div>
+                        <div class="scan-stage" data-stage="vuln">
+                            <div class="stage-icon"><i class="bi bi-bug"></i></div>
+                            <span class="stage-label">Vulns</span>
+                        </div>
+                        <div class="scan-stage" data-stage="analysis">
+                            <div class="stage-icon"><i class="bi bi-graph-up"></i></div>
+                            <span class="stage-label">Analysis</span>
+                        </div>
+                        <div class="scan-stage" data-stage="report">
+                            <div class="stage-icon"><i class="bi bi-file-text"></i></div>
+                            <span class="stage-label">Report</span>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span id="fullScanCurrentStageText">Waiting to start...</span>
+                            <span id="fullScanProgressText">0%</span>
+                        </div>
+                        <div class="progress" style="height:10px;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                 id="fullScanProgressBar"
+                                 style="width:0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clipboard-data me-2"></i>Scan Results
+                    </h5>
+                    <div class="btn-group btn-group-sm" id="fullScanResultActions" style="display:none;">
+                        <button type="button"
+                                class="btn btn-outline-primary"
+                                id="fullScanDownloadJson">
+                            <i class="bi bi-filetype-json me-1"></i>JSON
+                        </button>
+                        <button type="button"
+                                class="btn btn-outline-success"
+                                id="fullScanDownloadPdf">
+                            <i class="bi bi-filetype-pdf me-1"></i>PDF
+                        </button>
+                        <button type="button"
+                                class="btn btn-outline-info"
+                                id="fullScanViewReport">
+                            <i class="bi bi-eye me-1"></i>Full Report
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="fullScanNoResults" class="text-center text-muted py-4">
+                        <i class="bi bi-shield-check display-5 d-block mb-2"></i>
+                        <p class="mb-0">
+                            No results yet. Configure the scan on the left and click
+                            <strong>Start Full Scan</strong>.
+                        </p>
+                    </div>
+
+                    <div id="fullScanResultsContainer" style="display:none;">
+                        <!-- Risk & Summary -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <h6 class="text-muted mb-2">Risk Score</h6>
+                                <div class="risk-meter mb-1">
+                                    <div class="risk-meter-fill"
+                                         id="fullScanRiskMeterFill"
+                                         style="width:0%;"></div>
+                                    <span class="risk-meter-label"
+                                          id="fullScanRiskScore">0</span>
+                                </div>
+                                <span class="badge" id="fullScanRiskLevel">Unknown</span>
+                            </div>
+                            <div class="col-md-8">
+                                <h6 class="text-muted mb-2">Vulnerability Summary</h6>
+                                <div class="summary-grid">
+                                    <div class="summary-item critical">
+                                        <div class="summary-count" id="fullScanCriticalCount">0</div>
+                                        <div class="summary-label">Critical</div>
+                                    </div>
+                                    <div class="summary-item high">
+                                        <div class="summary-count" id="fullScanHighCount">0</div>
+                                        <div class="summary-label">High</div>
+                                    </div>
+                                    <div class="summary-item medium">
+                                        <div class="summary-count" id="fullScanMediumCount">0</div>
+                                        <div class="summary-label">Medium</div>
+                                    </div>
+                                    <div class="summary-item low">
+                                        <div class="summary-count" id="fullScanLowCount">0</div>
+                                        <div class="summary-label">Low</div>
+                                    </div>
+                                    <div class="summary-item info">
+                                        <div class="summary-count" id="fullScanInfoCount">0</div>
+                                        <div class="summary-label">Info</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabs -->
+                        <ul class="nav nav-tabs" id="fullScanTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#fullScanVulnsTab">
+                                    <i class="bi bi-bug me-1"></i>Vulnerabilities
+                                    <span class="badge bg-danger ms-1" id="fullScanVulnsBadge">0</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#fullScanPortsTab">
+                                    <i class="bi bi-diagram-3 me-1"></i>Ports
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#fullScanTechTab">
+                                    <i class="bi bi-cpu me-1"></i>Technologies
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#fullScanCrawlTab">
+                                    <i class="bi bi-diagram-2 me-1"></i>Crawled URLs
+                                </a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content pt-3">
+                            <!-- Vulns -->
+                            <div class="tab-pane fade show active" id="fullScanVulnsTab">
+                                <div class="mb-3" id="fullScanVulnFilter">
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button"
+                                                class="btn btn-outline-secondary active"
+                                                data-filter="all">
+                                            All
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-outline-danger"
+                                                data-filter="critical">
+                                            Critical
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-outline-warning"
+                                                data-filter="high">
+                                            High
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-outline-info"
+                                                data-filter="medium">
+                                            Medium
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="fullScanVulnsList">
+                                    <!-- vuln cards by JS -->
+                                </div>
+                            </div>
+
+                            <!-- Ports -->
+                            <div class="tab-pane fade" id="fullScanPortsTab">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Port</th>
+                                                <th>State</th>
+                                                <th>Service</th>
+                                                <th>Version</th>
+                                                <th>Risk</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="fullScanPortsList">
+                                            <!-- filled by JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Technologies -->
+                            <div class="tab-pane fade" id="fullScanTechTab">
+                                <div id="fullScanTechList">
+                                    <!-- tech badges by JS -->
+                                </div>
+                            </div>
+
+                            <!-- Crawled URLs -->
+                            <div class="tab-pane fade" id="fullScanCrawlTab">
+                                <div class="table-responsive" style="max-height:400px; overflow-y:auto;">
+                                    <table class="table table-sm mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>URL</th>
+                                                <th>Status</th>
+                                                <th>Forms</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="fullScanCrawlList">
+                                            <!-- filled by JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div> <!-- /tab-content -->
+                    </div> <!-- /fullScanResultsContainer -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Vulnerability Details Modal -->
+<div class="modal fade" id="fullScanVulnModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="fullScanVulnModalTitle">Vulnerability Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="fullScanVulnModalBody">
+                <!-- filled by JS -->
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Close
+                </button>
+                <button type="button" class="btn btn-primary" id="fullScanCopyVulnDetails">
+                    <i class="bi bi-clipboard me-1"></i>Copy Details
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/scanner_full.js') }}"></script>
+{% endblock %}

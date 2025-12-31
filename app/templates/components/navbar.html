@@ -1,0 +1,118 @@
+<!-- Top Navbar -->
+<nav class="top-navbar">
+    <div class="navbar-left">
+        <button class="mobile-toggle d-lg-none" id="mobileToggle">
+            <i class="bi bi-list"></i>
+        </button>
+        <div class="breadcrumb-container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="{{ url_for('main.dashboard') }}">Home</a></li>
+                    {% block breadcrumb %}{% endblock %}
+                </ol>
+            </nav>
+        </div>
+    </div>
+    
+    <div class="navbar-right">
+        <!-- Search -->
+        <div class="navbar-search">
+            <i class="bi bi-search"></i>
+            <input type="text" placeholder="Search targets, scans..." id="globalSearch">
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="navbar-actions">
+            <button class="action-btn" data-bs-toggle="modal" data-bs-target="#quickScanModal" title="Quick Scan">
+                <i class="bi bi-lightning-charge"></i>
+            </button>
+            
+            <button class="action-btn" id="themeToggle" title="Toggle Theme">
+                <i class="bi bi-moon-stars"></i>
+            </button>
+            
+            <div class="dropdown">
+                <button class="action-btn" data-bs-toggle="dropdown" title="Notifications">
+                    <i class="bi bi-bell"></i>
+                    <span class="notification-badge" id="notificationBadge">0</span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end notification-dropdown">
+                    <h6 class="dropdown-header">Notifications</h6>
+                    <div id="notificationList">
+                        <div class="dropdown-item text-muted text-center py-3">
+                            <i class="bi bi-inbox"></i>
+                            <p class="mb-0 small">No notifications</p>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item text-center small" href="#">View all notifications</a>
+                </div>
+            </div>
+            
+            <div class="dropdown">
+                <button class="action-btn" data-bs-toggle="dropdown" title="User Menu">
+                    <i class="bi bi-person-circle"></i>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a class="dropdown-item" href="{{ url_for('main.settings') }}">
+                        <i class="bi bi-gear me-2"></i>Settings
+                    </a>
+                    <a class="dropdown-item" href="#">
+                        <i class="bi bi-question-circle me-2"></i>Help
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">
+                        <i class="bi bi-box-arrow-right me-2"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Quick Scan Modal -->
+<div class="modal fade" id="quickScanModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-lightning-charge me-2"></i>Quick Scan
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="quickScanForm">
+                    <div class="mb-3">
+                        <label class="form-label">Target URL/IP</label>
+                        <input type="text" class="form-control" id="quickTarget" placeholder="https://example.com or 192.168.1.1" required>
+                        <div class="form-text">Enter a URL, domain, or IP address to scan</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Scan Type</label>
+                        <select class="form-select" id="quickScanType">
+                            <option value="full">Full Scan (All Checks)</option>
+                            <option value="quick">Quick Scan (Basic Checks)</option>
+                            <option value="port">Port Scan Only</option>
+                            <option value="web">Web Vulnerabilities Only</option>
+                            <option value="recon">Reconnaissance Only</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="quickScanAggressive">
+                            <label class="form-check-label" for="quickScanAggressive">
+                                Aggressive Mode (More thorough but slower)
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="startQuickScan">
+                    <i class="bi bi-play-fill me-1"></i>Start Scan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
