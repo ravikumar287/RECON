@@ -1,0 +1,457 @@
+# Common Ports Wordlist
+# VulnScanner - Port Scanning
+# Format: port:service:description
+
+# FTP
+20:ftp-data:FTP Data Transfer
+21:ftp:FTP Control
+# SSH/Telnet
+22:ssh:Secure Shell
+23:telnet:Telnet
+# Mail
+25:smtp:Simple Mail Transfer Protocol
+110:pop3:Post Office Protocol v3
+143:imap:Internet Message Access Protocol
+465:smtps:SMTP over SSL
+587:submission:SMTP Submission
+993:imaps:IMAP over SSL
+995:pop3s:POP3 over SSL
+# DNS
+53:dns:Domain Name System
+# HTTP/HTTPS
+80:http:Hypertext Transfer Protocol
+443:https:HTTP Secure
+8080:http-proxy:HTTP Proxy
+8443:https-alt:HTTPS Alternate
+8000:http-alt:HTTP Alternate
+8888:http-alt2:HTTP Alternate 2
+# Database
+1433:mssql:Microsoft SQL Server
+1521:oracle:Oracle Database
+3306:mysql:MySQL Database
+5432:postgresql:PostgreSQL Database
+27017:mongodb:MongoDB
+6379:redis:Redis
+11211:memcached:Memcached
+9200:elasticsearch:Elasticsearch HTTP
+9300:elasticsearch-cluster:Elasticsearch Cluster
+5984:couchdb:CouchDB
+7474:neo4j:Neo4j Browser
+8529:arangodb:ArangoDB
+9042:cassandra:Apache Cassandra
+# Windows Services
+135:msrpc:Microsoft RPC
+137:netbios-ns:NetBIOS Name Service
+138:netbios-dgm:NetBIOS Datagram
+139:netbios-ssn:NetBIOS Session
+445:microsoft-ds:Microsoft Directory Services (SMB)
+389:ldap:LDAP
+636:ldaps:LDAP over SSL
+3268:globalcatalog:Global Catalog
+3269:globalcatalog-ssl:Global Catalog SSL
+# Remote Desktop
+3389:rdp:Remote Desktop Protocol
+5900:vnc:VNC Remote Desktop
+5901:vnc-1:VNC Display 1
+5902:vnc-2:VNC Display 2
+# Web Servers
+81:http-alt:HTTP Alternate
+82:http-alt:HTTP Alternate
+83:http-alt:HTTP Alternate
+84:http-alt:HTTP Alternate
+85:http-alt:HTTP Alternate
+88:kerberos:Kerberos Authentication
+8001:http-alt:HTTP Alternate
+8002:http-alt:HTTP Alternate
+8008:http-alt:HTTP Alternate
+8009:ajp13:Apache JServ Protocol
+8081:http-alt:HTTP Alternate
+8082:http-alt:HTTP Alternate
+8083:http-alt:HTTP Alternate
+8084:http-alt:HTTP Alternate
+8085:http-alt:HTTP Alternate
+8086:influxdb:InfluxDB HTTP
+8087:http-alt:HTTP Alternate
+8088:http-alt:HTTP Alternate
+8089:splunk:Splunk Web
+8090:http-alt:HTTP Alternate
+8181:http-alt:HTTP Alternate
+8282:http-alt:HTTP Alternate
+8383:http-alt:HTTP Alternate
+8484:http-alt:HTTP Alternate
+8585:http-alt:HTTP Alternate
+8686:http-alt:HTTP Alternate
+8787:http-alt:HTTP Alternate
+8880:http-alt:HTTP Alternate
+8888:http-alt:HTTP Alternate
+8889:http-alt:HTTP Alternate
+9000:http-alt:HTTP Alternate/PHP-FPM
+9001:http-alt:HTTP Alternate
+9002:http-alt:HTTP Alternate
+9080:http-alt:HTTP Alternate
+9090:http-alt:HTTP Alternate/Prometheus
+9091:http-alt:HTTP Alternate
+9443:https-alt:HTTPS Alternate
+10000:webmin:Webmin
+10443:https-alt:HTTPS Alternate
+# Proxy
+1080:socks:SOCKS Proxy
+3128:squid:Squid Proxy
+8118:privoxy:Privoxy
+9050:tor-socks:Tor SOCKS Proxy
+# Mail Extended
+24:smtp-alt:SMTP Alternate
+26:smtp-alt:SMTP Alternate
+106:poppassd:POP Password Change
+2525:smtp-alt:SMTP Alternate
+# Monitoring
+161:snmp:SNMP
+162:snmptrap:SNMP Trap
+199:snmp-unix:SNMP Unix Multiplexer
+1099:rmiregistry:RMI Registry
+3000:grafana:Grafana/Node.js
+5601:kibana:Kibana
+8125:statsd:StatsD
+9093:alertmanager:Prometheus Alertmanager
+9100:node-exporter:Prometheus Node Exporter
+# Message Queues
+1883:mqtt:MQTT
+5672:amqp:RabbitMQ AMQP
+15672:rabbitmq-mgmt:RabbitMQ Management
+61613:stomp:STOMP
+61616:activemq:ActiveMQ OpenWire
+9092:kafka:Apache Kafka
+2181:zookeeper:Apache ZooKeeper
+# Container/Orchestration
+2375:docker:Docker HTTP
+2376:docker-tls:Docker HTTPS
+2377:swarm:Docker Swarm
+4243:docker-alt:Docker Alt
+5000:docker-registry:Docker Registry
+6443:kubernetes:Kubernetes API
+8001:kubernetes-dashboard:Kubernetes Dashboard
+10250:kubelet:Kubernetes Kubelet
+10255:kubelet-ro:Kubernetes Kubelet Read-Only
+# CI/CD
+8080:jenkins:Jenkins
+9418:git:Git Protocol
+50000:jenkins-agent:Jenkins Agent
+# Version Control
+9418:git:Git
+3690:svn:Subversion
+# Java/Application Servers
+1099:rmi:Java RMI
+4444:rmi-alt:Java RMI Alt
+4848:glassfish:GlassFish Admin
+7001:weblogic:WebLogic
+7002:weblogic-ssl:WebLogic SSL
+8180:tomcat:Apache Tomcat
+8280:wso2:WSO2
+9043:websphere:WebSphere Admin SSL
+9060:websphere-admin:WebSphere Admin
+9080:websphere:WebSphere HTTP
+9443:websphere-ssl:WebSphere HTTPS
+# Development
+3000:node:Node.js/React
+4200:angular:Angular Dev Server
+5173:vite:Vite Dev Server
+8000:django:Django
+8888:jupyter:Jupyter Notebook
+# Network Services
+67:dhcp:DHCP Server
+68:dhcp-client:DHCP Client
+69:tftp:TFTP
+123:ntp:Network Time Protocol
+514:syslog:Syslog
+873:rsync:rsync
+# File Sharing
+111:rpcbind:RPC Bind
+2049:nfs:Network File System
+548:afp:Apple Filing Protocol
+# Gaming/Streaming
+25565:minecraft:Minecraft
+27015:source:Source Engine
+27017:steam:Steam
+1935:rtmp:RTMP Streaming
+# VPN
+500:isakmp:IKE/IPSec
+1194:openvpn:OpenVPN
+1701:l2tp:L2TP
+1723:pptp:PPTP
+4500:ipsec-nat:IPSec NAT
+# Misc
+79:finger:Finger
+113:ident:Ident
+179:bgp:Border Gateway Protocol
+264:bgmp:BGMP
+512:exec:Remote Exec
+513:login:Remote Login
+514:shell:Remote Shell
+515:printer:LPD
+530:courier:Courier
+543:klogin:Kerberos Login
+544:kshell:Kerberos Shell
+631:ipp:Internet Printing Protocol
+646:ldp:LDP
+873:rsync:rsync
+902:vmware:VMware
+912:apex:Apex Mesh
+1025:nfs-alt:NFS Alt
+1026:nterm:nterm
+1027:icg:ICG
+1028:unknown:Unknown
+1029:unknown:Unknown
+1433:ms-sql-s:Microsoft SQL Server
+1434:ms-sql-m:Microsoft SQL Server Monitor
+1512:wins:WINS
+1524:ingreslock:Ingres Lock
+2000:cisco-sccp:Cisco SCCP
+2001:dc:DC
+2002:globe:Globe
+2003:carbon:Carbon/Graphite
+2004:mailbox:Mailbox
+2049:nfs:NFS
+2082:cpanel:cPanel
+2083:cpanel-ssl:cPanel SSL
+2086:whm:WHM
+2087:whm-ssl:WHM SSL
+2095:webmail:cPanel Webmail
+2096:webmail-ssl:cPanel Webmail SSL
+2100:amiganetfs:Amiga Network FS
+2222:ssh-alt:SSH Alternate
+2323:telnet-alt:Telnet Alternate
+2483:oracle-tns:Oracle TNS
+2484:oracle-tns-ssl:Oracle TNS SSL
+3000:ntop:ntop
+3001:nessus:Nessus
+3260:iscsi:iSCSI
+3299:saprouter:SAP Router
+3300:sap:SAP
+3301:sap:SAP
+3306:mysql:MySQL
+3307:mysql-alt:MySQL Alt
+3333:dec-notes:DEC Notes
+3389:rdp:Remote Desktop
+3390:rdp-alt:RDP Alt
+4000:remoteanything:Remote Anything
+4001:newoak:NewOak
+4002:mlchat:MLChat
+4022:dnox:DNOX
+4040:spark:Apache Spark
+4045:lockd:NFS Lock Daemon
+4063:ice:ZeroC ICE
+4064:ice-ssl:ZeroC ICE SSL
+4443:pharos:Pharos
+4445:upnotifyp:upnotifyp
+4505:salt-master:Salt Master
+4506:salt-minion:Salt Minion
+4567:sinatra:Sinatra
+4711:trinity:Trinity
+4712:trinity:Trinity
+4848:glassfish:GlassFish
+4899:radmin:Radmin
+5000:upnp:UPnP
+5001:commplex-link:Commplex Link
+5003:filemaker:FileMaker
+5004:rtp:RTP
+5005:rtp-alt:RTP Alt
+5006:wsm:WSM
+5007:wsm-ssl:WSM SSL
+5008:synaptics:Synaptics
+5009:airport-admin:Airport Admin
+5010:telelpathstart:TelepathStart
+5050:mmcc:MMCC
+5051:ida-agent:IDA Agent
+5060:sip:SIP
+5061:sip-tls:SIP TLS
+5222:xmpp:XMPP Client
+5269:xmpp-server:XMPP Server
+5280:xmpp-bosh:XMPP BOSH
+5353:mdns:mDNS
+5357:wsdapi:WSDAPI
+5432:postgresql:PostgreSQL
+5433:postgresql-alt:PostgreSQL Alt
+5500:vnc-http:VNC HTTP
+5555:adb:Android Debug Bridge
+5601:kibana:Kibana
+5631:pcanywheredata:PCAnywhere Data
+5632:pcanywherestat:PCAnywhere Status
+5666:nrpe:NRPE
+5800:vnc-http:VNC HTTP
+5801:vnc-http-1:VNC HTTP 1
+5802:vnc-http-2:VNC HTTP 2
+5850:unknown:Unknown
+5900:vnc:VNC
+5901:vnc-1:VNC 1
+5902:vnc-2:VNC 2
+5938:teamviewer:TeamViewer
+5984:couchdb:CouchDB
+5985:wsman:WS-Management HTTP
+5986:wsman-ssl:WS-Management HTTPS
+6000:x11:X11
+6001:x11-1:X11 1
+6002:x11-2:X11 2
+6003:x11-3:X11 3
+6004:x11-4:X11 4
+6005:x11-5:X11 5
+6006:x11-6:X11 6
+6007:x11-7:X11 7
+6379:redis:Redis
+6380:redis-alt:Redis Alt
+6443:kubernetes:Kubernetes API
+6660:irc:IRC
+6661:irc:IRC
+6662:irc:IRC
+6663:irc:IRC
+6664:irc:IRC
+6665:irc:IRC
+6666:irc:IRC
+6667:irc:IRC
+6668:irc:IRC
+6669:irc:IRC
+6697:irc-ssl:IRC SSL
+7000:afs3-fileserver:AFS File Server
+7001:weblogic:WebLogic
+7002:weblogic-ssl:WebLogic SSL
+7070:realserver:RealServer
+7071:zimbra-admin:Zimbra Admin
+7199:cassandra-jmx:Cassandra JMX
+7210:maxdb:MaxDB
+7400:rtps-discovery:RTPS Discovery
+7443:oracle-as:Oracle AS
+7474:neo4j:Neo4j
+7547:cwmp:CWMP
+7676:imqbrokerd:imqbrokerd
+7777:cbt:CBT
+7778:interwise:Interwise
+7779:vstat:vstat
+7780:accu-lmgr:accu-lmgr
+8000:http-alt:HTTP Alt
+8001:http-alt:HTTP Alt
+8002:http-alt:HTTP Alt
+8003:http-alt:HTTP Alt
+8004:http-alt:HTTP Alt
+8005:tomcat-shutdown:Tomcat Shutdown
+8006:proxmox:Proxmox
+8007:http-alt:HTTP Alt
+8008:http-alt:HTTP Alt
+8009:ajp13:AJP13
+8010:http-alt:HTTP Alt
+8042:yarn:YARN NodeManager
+8069:odoo:Odoo
+8080:http-proxy:HTTP Proxy
+8081:http-alt:HTTP Alt
+8082:http-alt:HTTP Alt
+8083:http-alt:HTTP Alt
+8084:http-alt:HTTP Alt
+8085:http-alt:HTTP Alt
+8086:influxdb:InfluxDB
+8087:http-alt:HTTP Alt
+8088:yarn:YARN ResourceManager
+8089:splunk:Splunk
+8090:opsmgr:OpsMgr
+8091:couchbase:Couchbase Admin
+8111:teamcity:TeamCity
+8112:deluge:Deluge
+8123:home-assistant:Home Assistant
+8125:statsd:StatsD
+8126:statsd-admin:StatsD Admin
+8140:puppet:Puppet
+8172:iis-manager:IIS Manager
+8180:tomcat:Tomcat Alt
+8181:http-alt:HTTP Alt
+8200:vault:HashiCorp Vault
+8222:nats:NATS Monitor
+8243:wso2-https:WSO2 HTTPS
+8280:wso2-http:WSO2 HTTP
+8291:winbox:MikroTik WinBox
+8300:consul:Consul RPC
+8301:consul-lan:Consul LAN
+8302:consul-wan:Consul WAN
+8333:bitcoin:Bitcoin
+8384:syncthing:Syncthing
+8443:https-alt:HTTPS Alt
+8444:https-alt:HTTPS Alt
+8445:https-alt:HTTPS Alt
+8500:consul-http:Consul HTTP
+8530:wsus:WSUS
+8531:wsus-ssl:WSUS SSL
+8545:ethereum:Ethereum RPC
+8585:http-alt:HTTP Alt
+8600:consul-dns:Consul DNS
+8686:http-alt:HTTP Alt
+8761:eureka:Spring Eureka
+8787:rstudio:RStudio
+8834:nessus-xmlrpc:Nessus
+8880:http-alt:HTTP Alt
+8888:http-alt:HTTP Alt
+8889:http-alt:HTTP Alt
+8983:solr:Apache Solr
+9000:php-fpm:PHP-FPM
+9001:supervisord:Supervisord
+9002:http-alt:HTTP Alt
+9003:xdebug:Xdebug
+9042:cassandra:Cassandra CQL
+9043:websphere-ssl:WebSphere SSL
+9060:websphere:WebSphere Admin
+9080:websphere-http:WebSphere HTTP
+9090:prometheus:Prometheus
+9091:transmission:Transmission
+9092:kafka:Kafka
+9100:jetdirect:JetDirect
+9160:cassandra-thrift:Cassandra Thrift
+9200:elasticsearch:Elasticsearch
+9201:elasticsearch:Elasticsearch
+9300:elasticsearch:Elasticsearch Cluster
+9418:git:Git
+9443:websphere-https:WebSphere HTTPS
+9500:ismserver:ismserver
+9600:logstash:Logstash
+9800:webdav:WebDAV
+9999:abyss:Abyss
+10000:webmin:Webmin
+10001:scp:SCP
+10010:rxapi:RXAPI
+10050:zabbix-agent:Zabbix Agent
+10051:zabbix-server:Zabbix Server
+10250:kubelet:Kubelet
+10255:kubelet-ro:Kubelet Read-Only
+10443:https-alt:HTTPS Alt
+11211:memcached:Memcached
+11300:beanstalkd:Beanstalkd
+11371:hkp:HKP
+12345:netbus:NetBus
+15672:rabbitmq-mgmt:RabbitMQ Management
+16080:http-alt:HTTP Alt
+16443:https-alt:HTTPS Alt
+17000:unknown:Unknown
+18080:http-alt:HTTP Alt
+18081:http-alt:HTTP Alt
+18443:https-alt:HTTPS Alt
+19999:netdata:Netdata
+20000:dnp:DNP
+20547:openvpn:OpenVPN
+25565:minecraft:Minecraft
+27017:mongodb:MongoDB
+27018:mongodb-shardsvr:MongoDB Shard
+27019:mongodb-configsvr:MongoDB Config
+28017:mongodb-web:MongoDB Web
+32768:filenet:FileNet
+32769:filenet:FileNet
+32770:filenet:FileNet
+32771:filenet:FileNet
+32772:filenet:FileNet
+32773:filenet:FileNet
+32774:filenet:FileNet
+32775:filenet:FileNet
+44443:https-alt:HTTPS Alt
+49152:unknown:Unknown
+49153:unknown:Unknown
+49154:unknown:Unknown
+49155:unknown:Unknown
+49156:unknown:Unknown
+49157:unknown:Unknown
+50000:ibm-db2:IBM DB2
+50001:unknown:Unknown
+50002:unknown:Unknown
+50003:unknown:Unknown

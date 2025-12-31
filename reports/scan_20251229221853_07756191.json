@@ -1,0 +1,855 @@
+{
+  "success": false,
+  "scan_id": "scan_20251229221853_07756191",
+  "target": "https://pccc.gov.pk",
+  "original_target": "https://pccc.gov.pk",
+  "scan_type": "full",
+  "modules": {
+    "dns": {
+      "success": true,
+      "scan_id": "scan_20251229221853_38ee859b",
+      "target": "pccc.gov.pk",
+      "results": {
+        "A": {
+          "record_type": "A",
+          "records": [
+            {
+              "ip": "132.148.78.219"
+            }
+          ],
+          "success": true,
+          "error": null,
+          "ttl": 14400
+        },
+        "AAAA": {
+          "record_type": "AAAA",
+          "records": [],
+          "success": false,
+          "error": "No AAAA records found"
+        },
+        "MX": {
+          "record_type": "MX",
+          "records": [
+            {
+              "priority": 0,
+              "mail_server": "pccc.gov.pk"
+            }
+          ],
+          "success": true,
+          "error": null,
+          "ttl": 14400
+        },
+        "NS": {
+          "record_type": "NS",
+          "records": [
+            {
+              "nameserver": "ns33.b2bhosting.net"
+            },
+            {
+              "nameserver": "ns34.b2bhosting.net"
+            }
+          ],
+          "success": true,
+          "error": null,
+          "ttl": 21600
+        },
+        "TXT": {
+          "record_type": "TXT",
+          "records": [
+            {
+              "text": "v=spf1 ip4:132.148.78.219 +a +mx +ip4:92.204.139.25 ~all"
+            }
+          ],
+          "success": true,
+          "error": null,
+          "ttl": 14400
+        },
+        "CNAME": {
+          "record_type": "CNAME",
+          "records": [],
+          "success": false,
+          "error": "No CNAME records found"
+        },
+        "SOA": {
+          "record_type": "SOA",
+          "records": [
+            {
+              "primary_ns": "ns33.b2bhosting.net",
+              "admin_email": "root@219.78.148.132.host.secureserver.net",
+              "serial": 2025120301,
+              "refresh": 3600,
+              "retry": 1800,
+              "expire": 1209600,
+              "minimum_ttl": 86400
+            }
+          ],
+          "success": true,
+          "error": null,
+          "ttl": 21600
+        }
+      },
+      "all_records": [
+        {
+          "type": "A",
+          "ip": "132.148.78.219"
+        },
+        {
+          "type": "MX",
+          "priority": 0,
+          "mail_server": "pccc.gov.pk"
+        },
+        {
+          "type": "NS",
+          "nameserver": "ns33.b2bhosting.net"
+        },
+        {
+          "type": "NS",
+          "nameserver": "ns34.b2bhosting.net"
+        },
+        {
+          "type": "TXT",
+          "text": "v=spf1 ip4:132.148.78.219 +a +mx +ip4:92.204.139.25 ~all"
+        },
+        {
+          "type": "SOA",
+          "primary_ns": "ns33.b2bhosting.net",
+          "admin_email": "root@219.78.148.132.host.secureserver.net",
+          "serial": 2025120301,
+          "refresh": 3600,
+          "retry": 1800,
+          "expire": 1209600,
+          "minimum_ttl": 86400
+        }
+      ],
+      "total_records": 6,
+      "start_time": "2025-12-29T22:18:53.314670",
+      "end_time": "2025-12-29T22:18:55.517255",
+      "duration": 2.202585,
+      "timestamp": "2025-12-29T22:18:55.517300"
+    },
+    "whois": {
+      "success": true,
+      "scan_id": "scan_20251229221855_e78fa3f4",
+      "target": "pccc.gov.pk",
+      "whois_data": {
+        "domain_name": null,
+        "registrar": null,
+        "registrar_url": null,
+        "registrar_iana_id": null,
+        "creation_date": "2010-07-22T00:00:00",
+        "expiration_date": "2026-07-22T00:00:00",
+        "updated_date": null,
+        "domain_age": {
+          "years": 15,
+          "months": 5,
+          "days": 29,
+          "total_days": 5639
+        },
+        "expiration_status": {
+          "expired": false,
+          "days_until_expiry": 204,
+          "warning": false,
+          "critical": false,
+          "message": "Domain expires in 204 days"
+        },
+        "name_servers": [
+          "ns34.b2bhosting.net",
+          "ns33.b2bhosting.net"
+        ],
+        "status": [
+          "Domain is Registered"
+        ],
+        "registrant": {
+          "name": null,
+          "organization": null,
+          "email": null,
+          "country": null,
+          "state": null,
+          "city": null,
+          "address": null,
+          "zipcode": null
+        },
+        "dnssec": null,
+        "whois_server": null,
+        "raw_text": "# WHOIS .PK Domains (PKNIC)\n\n    Domain: pccc.gov.pk\n    Status: Domain is Registered\n    \n\n    Creation Date: 2010-07-22\n    Expiry Date: 2026-07-22\n    Name Server: ns33.b2bhosting.net\n    Name Server: ns34.b2bhosting.net\n    Name Server: \n    Name Server: \n\n"
+      },
+      "error": null,
+      "duration": 1.258726,
+      "timestamp": "2025-12-29T22:18:56.776270"
+    },
+    "technology": {
+      "success": true,
+      "scan_id": "scan_20251229221856_6f009c47",
+      "url": "https://pccc.gov.pk",
+      "technologies": [
+        {
+          "name": "jQuery",
+          "slug": "jquery",
+          "confidence": 25,
+          "version": "2.",
+          "category": "javascript_library",
+          "evidence": [
+            "HTML pattern: jquery-\\d"
+          ]
+        },
+        {
+          "name": "Apache",
+          "slug": "apache",
+          "confidence": 30,
+          "version": null,
+          "category": "web_server",
+          "evidence": [
+            "Header: server"
+          ]
+        },
+        {
+          "name": "PHP",
+          "slug": "php",
+          "confidence": 25,
+          "version": null,
+          "category": "programming_language",
+          "evidence": [
+            "HTML pattern: \\.php"
+          ]
+        }
+      ],
+      "categories": {
+        "javascript_library": [
+          {
+            "name": "jQuery",
+            "slug": "jquery",
+            "confidence": 25,
+            "version": "2.",
+            "category": "javascript_library",
+            "evidence": [
+              "HTML pattern: jquery-\\d"
+            ]
+          }
+        ],
+        "web_server": [
+          {
+            "name": "Apache",
+            "slug": "apache",
+            "confidence": 30,
+            "version": null,
+            "category": "web_server",
+            "evidence": [
+              "Header: server"
+            ]
+          }
+        ],
+        "programming_language": [
+          {
+            "name": "PHP",
+            "slug": "php",
+            "confidence": 25,
+            "version": null,
+            "category": "programming_language",
+            "evidence": [
+              "HTML pattern: \\.php"
+            ]
+          }
+        ]
+      },
+      "headers": {
+        "Date": "Mon, 29 Dec 2025 16:48:57 GMT",
+        "Server": "Apache",
+        "Upgrade": "h2,h2c",
+        "Connection": "Upgrade, Keep-Alive",
+        "Last-Modified": "Wed, 24 Sep 2025 05:07:55 GMT",
+        "Accept-Ranges": "bytes",
+        "Content-Length": "8462",
+        "Vary": "Accept-Encoding",
+        "Keep-Alive": "timeout=5, max=100",
+        "Content-Type": "text/html"
+      },
+      "error": null,
+      "duration": 4.231403,
+      "timestamp": "2025-12-29T22:19:01.007923",
+      "total_technologies": 3
+    },
+    "ssl": {
+      "success": true,
+      "scan_id": "scan_20251229221901_c94682ce",
+      "host": "pccc.gov.pk",
+      "port": 443,
+      "ip_address": "132.148.78.219",
+      "certificate": {
+        "subject": {
+          "commonName": "pccc.gov.pk"
+        },
+        "issuer": {
+          "countryName": "US",
+          "organizationName": "Let's Encrypt",
+          "commonName": "R12"
+        },
+        "common_name": "pccc.gov.pk",
+        "organization": "",
+        "issuer_name": "R12",
+        "issuer_org": "Let's Encrypt",
+        "serial_number": "521630654101118968709582686782764373594779",
+        "version": "v3",
+        "signature_algorithm": "sha256WithRSAEncryption",
+        "not_valid_before": "2025-12-03T13:47:07",
+        "not_valid_after": "2026-03-03T13:47:06",
+        "days_until_expiry": 63,
+        "is_expired": false,
+        "is_expiring_soon": false,
+        "san": [
+          {
+            "type": "DNS",
+            "value": "*.pccc.gov.pk"
+          },
+          {
+            "type": "DNS",
+            "value": "pccc.gov.pk"
+          }
+        ],
+        "fingerprints": {
+          "sha256": "a80a5ba79c92954da4c3aeae355bf7dc5d75b03adfe25968c5b3c352add1761f",
+          "sha1": "8a7d7309ecc864e56a7972b87c6d39a4eb1a34df"
+        },
+        "key_size": 2048,
+        "key_type": "RSAPublicKey",
+        "is_self_signed": false,
+        "is_wildcard": false
+      },
+      "chain": [],
+      "protocols": {
+        "SSLv2": false,
+        "SSLv3": false,
+        "TLSv1.0": false,
+        "TLSv1.1": false,
+        "TLSv1.2": true,
+        "TLSv1.3": true
+      },
+      "ciphers": [
+        {
+          "name": "TLS_AES_256_GCM_SHA384",
+          "protocol": "TLSv1.3",
+          "bits": 256,
+          "is_weak": false,
+          "is_strong": true
+        }
+      ],
+      "vulnerabilities": [],
+      "grade": "A+",
+      "issues": [],
+      "recommendations": [],
+      "error": null,
+      "duration": 5.334895,
+      "timestamp": "2025-12-29T22:19:06.347175"
+    },
+    "headers": {
+      "success": true,
+      "scan_id": "scan_20251229221906_0ff04801",
+      "url": "https://pccc.gov.pk",
+      "headers": {
+        "Date": "Mon, 29 Dec 2025 16:49:07 GMT",
+        "Server": "Apache",
+        "Upgrade": "h2,h2c",
+        "Connection": "Upgrade, Keep-Alive",
+        "Last-Modified": "Wed, 24 Sep 2025 05:07:55 GMT",
+        "Accept-Ranges": "bytes",
+        "Content-Length": "8462",
+        "Vary": "Accept-Encoding",
+        "Keep-Alive": "timeout=5, max=100",
+        "Content-Type": "text/html"
+      },
+      "security_headers": {
+        "present": [],
+        "missing": [
+          {
+            "header": "Strict-Transport-Security",
+            "description": "HTTP Strict Transport Security (HSTS)",
+            "severity": "high",
+            "recommendation": "Add \"Strict-Transport-Security: max-age=31536000; includeSubDomains; preload\""
+          },
+          {
+            "header": "Content-Security-Policy",
+            "description": "Content Security Policy (CSP)",
+            "severity": "high",
+            "recommendation": "Implement a strict Content Security Policy"
+          },
+          {
+            "header": "X-Content-Type-Options",
+            "description": "Prevents MIME type sniffing",
+            "severity": "medium",
+            "recommendation": "Add \"X-Content-Type-Options: nosniff\""
+          },
+          {
+            "header": "X-Frame-Options",
+            "description": "Prevents clickjacking attacks",
+            "severity": "medium",
+            "recommendation": "Add \"X-Frame-Options: DENY\" or \"SAMEORIGIN\""
+          },
+          {
+            "header": "X-XSS-Protection",
+            "description": "XSS filter (deprecated but still useful)",
+            "severity": "low",
+            "recommendation": "Add \"X-XSS-Protection: 1; mode=block\""
+          },
+          {
+            "header": "Referrer-Policy",
+            "description": "Controls referrer information",
+            "severity": "low",
+            "recommendation": "Add \"Referrer-Policy: strict-origin-when-cross-origin\""
+          },
+          {
+            "header": "Permissions-Policy",
+            "description": "Controls browser features",
+            "severity": "low",
+            "recommendation": "Implement Permissions-Policy to restrict browser features"
+          },
+          {
+            "header": "X-Permitted-Cross-Domain-Policies",
+            "description": "Controls cross-domain policies for Flash/PDF",
+            "severity": "low",
+            "recommendation": "Add \"X-Permitted-Cross-Domain-Policies: none\""
+          }
+        ],
+        "misconfigured": []
+      },
+      "information_disclosure": [
+        {
+          "header": "Server",
+          "value": "Apache",
+          "description": "Reveals server software",
+          "severity": "info",
+          "recommendation": "Remove or obfuscate the Server header"
+        }
+      ],
+      "cookies": [],
+      "cors": {
+        "enabled": false,
+        "allow_origin": null,
+        "allow_credentials": false,
+        "allow_methods": [],
+        "allow_headers": [],
+        "expose_headers": [],
+        "max_age": null,
+        "issues": []
+      },
+      "csp_analysis": {
+        "present": false,
+        "policy": null,
+        "directives": {},
+        "issues": [],
+        "score": 0
+      },
+      "score": 27,
+      "grade": "F",
+      "issues": [
+        {
+          "type": "information_disclosure",
+          "header": "Server",
+          "value": "Apache",
+          "severity": "info"
+        }
+      ],
+      "recommendations": [
+        "Add \"Strict-Transport-Security: max-age=31536000; includeSubDomains; preload\"",
+        "Implement a strict Content Security Policy",
+        "Add \"X-Content-Type-Options: nosniff\"",
+        "Add \"X-Frame-Options: DENY\" or \"SAMEORIGIN\"",
+        "Add \"X-XSS-Protection: 1; mode=block\"",
+        "Add \"Referrer-Policy: strict-origin-when-cross-origin\"",
+        "Implement Permissions-Policy to restrict browser features",
+        "Add \"X-Permitted-Cross-Domain-Policies: none\""
+      ],
+      "error": null,
+      "status_code": 200,
+      "waf": null,
+      "duration": 0.74782,
+      "timestamp": "2025-12-29T22:19:07.095417"
+    },
+    "ports": {
+      "success": true,
+      "scan_id": "scan_20251229221907_68fe1a71",
+      "target": "pccc.gov.pk",
+      "target_ip": "132.148.78.219",
+      "scan_type": "tcp",
+      "ports_scanned": 1000,
+      "open_ports": [
+        {
+          "port": 21,
+          "state": "open",
+          "service": "FTP",
+          "banner": "220---------- Welcome to Pure-FTPd [privsep] [TLS] ----------\r\n220-You are user number 1 of 50 allowed.\r\n220-Local time is now 16:49. Server port: 21.\r\n220-This is a private system - No anonymous logi",
+          "version": null
+        },
+        {
+          "port": 22,
+          "state": "open",
+          "service": "SSH",
+          "banner": "SSH-2.0-OpenSSH_8.7",
+          "version": "2.0"
+        },
+        {
+          "port": 25,
+          "state": "open",
+          "service": "SMTP",
+          "banner": null,
+          "version": null
+        },
+        {
+          "port": 53,
+          "state": "open",
+          "service": "DNS",
+          "banner": null,
+          "version": null
+        },
+        {
+          "port": 80,
+          "state": "open",
+          "service": "HTTP",
+          "banner": "HTTP/1.1 200 OK\r\nDate: Mon, 29 Dec 2025 16:49:07 GMT\r\nServer: Apache\r\nUpgrade: h2,h2c\r\nConnection: Upgrade, close\r\nLast-Modified: Tue, 05 Aug 2025 23:18:53 GMT\r\nAccept-Ranges: bytes\r\nContent-Length: 1",
+          "version": "1.1"
+        },
+        {
+          "port": 110,
+          "state": "open",
+          "service": "POP3",
+          "banner": "+OK Dovecot ready.",
+          "version": null
+        },
+        {
+          "port": 143,
+          "state": "open",
+          "service": "IMAP",
+          "banner": "* OK [CAPABILITY IMAP4rev1 LOGIN-REFERRALS ID ENABLE IDLE SASL-IR LITERAL+ STARTTLS AUTH=PLAIN AUTH=LOGIN] Dovecot ready.",
+          "version": null
+        },
+        {
+          "port": 443,
+          "state": "open",
+          "service": "HTTPS",
+          "banner": "\u0015\u0003\u0003\u0000\u0002\u0002\u0016",
+          "version": null
+        },
+        {
+          "port": 465,
+          "state": "open",
+          "service": "Unknown",
+          "banner": null,
+          "version": null
+        },
+        {
+          "port": 587,
+          "state": "open",
+          "service": "Unknown",
+          "banner": "220-219.78.148.132.host.secureserver.net ESMTP Exim 4.99 #2 Mon, 29 Dec 2025 16:49:17 +0000 \r\n220-We do not authorize the use of this system to transport unsolicited, \r\n220 and/or bulk e-mail.\r\n500 un",
+          "version": "219.78.148.132"
+        },
+        {
+          "port": 993,
+          "state": "open",
+          "service": "IMAPS",
+          "banner": null,
+          "version": null
+        },
+        {
+          "port": 995,
+          "state": "open",
+          "service": "POP3S",
+          "banner": null,
+          "version": null
+        }
+      ],
+      "filtered_ports": 0,
+      "open_count": 12,
+      "start_time": "2025-12-29T22:19:07.100852",
+      "end_time": "2025-12-29T22:19:27.418341",
+      "duration": 20.317489,
+      "timestamp": "2025-12-29T22:19:27.418410"
+    },
+    "crawler": {
+      "success": true,
+      "scan_id": "scan_20251229221927_509dbec2",
+      "target_url": "https://pccc.gov.pk",
+      "urls": [],
+      "urls_found": 0,
+      "pages": [],
+      "forms": [],
+      "emails": [],
+      "js_files": [],
+      "comments": [],
+      "external_links": [],
+      "parameters": {},
+      "subdomains": [],
+      "robots": {
+        "exists": false,
+        "disallowed": [],
+        "allowed": [],
+        "sitemaps": [],
+        "crawl_delay": null
+      },
+      "sitemap_urls": 0,
+      "statistics": {
+        "pages_crawled": 0,
+        "pages_failed": 0,
+        "forms_found": 0,
+        "emails_found": 0,
+        "js_files_found": 0,
+        "external_links": 0
+      },
+      "max_depth": 3,
+      "scope": "domain",
+      "start_time": "2025-12-29T22:19:27.420771",
+      "end_time": "2025-12-29T22:19:28.416761",
+      "duration": 0.99599,
+      "timestamp": "2025-12-29T22:19:28.416880"
+    },
+    "directories": {
+      "success": true,
+      "scan_id": "scan_20251229221928_24d868e5",
+      "target_url": "https://pccc.gov.pk",
+      "found_paths": [
+        {
+          "path": "/.htpasswd",
+          "url": "https://pccc.gov.pk/.htpasswd",
+          "status_code": 403,
+          "content_length": 358,
+          "content_type": "text/html; charset=iso-8859-1",
+          "redirect_url": null,
+          "server": "Apache",
+          "interesting": true,
+          "title": null,
+          "severity": "critical"
+        },
+        {
+          "path": "/cpanel",
+          "url": "https://pccc.gov.pk/cpanel",
+          "status_code": 200,
+          "content_length": 34608,
+          "content_type": "text/html",
+          "redirect_url": null,
+          "server": "Apache",
+          "interesting": false,
+          "title": "cPanel Redirect",
+          "severity": "high"
+        },
+        {
+          "path": "/webmail",
+          "url": "https://pccc.gov.pk/webmail",
+          "status_code": 200,
+          "content_length": 34613,
+          "content_type": "text/html",
+          "redirect_url": null,
+          "server": "Apache",
+          "interesting": false,
+          "title": "cPanel Redirect",
+          "severity": "high"
+        },
+        {
+          "path": "/.htaccess",
+          "url": "https://pccc.gov.pk/.htaccess",
+          "status_code": 403,
+          "content_length": 358,
+          "content_type": "text/html; charset=iso-8859-1",
+          "redirect_url": null,
+          "server": "Apache",
+          "interesting": true,
+          "title": null,
+          "severity": "medium"
+        },
+        {
+          "path": "/images",
+          "url": "https://pccc.gov.pk/images",
+          "status_code": 301,
+          "content_length": 275,
+          "content_type": "text/html; charset=iso-8859-1",
+          "redirect_url": null,
+          "server": "Apache",
+          "interesting": false,
+          "title": null,
+          "severity": "low"
+        },
+        {
+          "path": "/cgi-bin",
+          "url": "https://pccc.gov.pk/cgi-bin",
+          "status_code": 301,
+          "content_length": 276,
+          "content_type": "text/html; charset=iso-8859-1",
+          "redirect_url": null,
+          "server": "Apache",
+          "interesting": false,
+          "title": null,
+          "severity": "low"
+        },
+        {
+          "path": "/Thumbs.db",
+          "url": "https://pccc.gov.pk/Thumbs.db",
+          "status_code": 200,
+          "content_length": 169984,
+          "content_type": "",
+          "redirect_url": null,
+          "server": "Apache",
+          "interesting": false,
+          "title": null,
+          "severity": "low"
+        }
+      ],
+      "total_found": 7,
+      "statistics": {
+        "total_requests": 197,
+        "found": 7,
+        "errors": 0,
+        "filtered": 0
+      },
+      "has_custom_404": false,
+      "severity_summary": {
+        "critical": 1,
+        "high": 2,
+        "medium": 1,
+        "low": 3
+      },
+      "interesting_findings": [
+        {
+          "path": "/.htpasswd",
+          "url": "https://pccc.gov.pk/.htpasswd",
+          "status_code": 403,
+          "content_length": 358,
+          "content_type": "text/html; charset=iso-8859-1",
+          "redirect_url": null,
+          "server": "Apache",
+          "interesting": true,
+          "title": null,
+          "severity": "critical"
+        },
+        {
+          "path": "/cpanel",
+          "url": "https://pccc.gov.pk/cpanel",
+          "status_code": 200,
+          "content_length": 34608,
+          "content_type": "text/html",
+          "redirect_url": null,
+          "server": "Apache",
+          "interesting": false,
+          "title": "cPanel Redirect",
+          "severity": "high"
+        },
+        {
+          "path": "/webmail",
+          "url": "https://pccc.gov.pk/webmail",
+          "status_code": 200,
+          "content_length": 34613,
+          "content_type": "text/html",
+          "redirect_url": null,
+          "server": "Apache",
+          "interesting": false,
+          "title": "cPanel Redirect",
+          "severity": "high"
+        },
+        {
+          "path": "/.htaccess",
+          "url": "https://pccc.gov.pk/.htaccess",
+          "status_code": 403,
+          "content_length": 358,
+          "content_type": "text/html; charset=iso-8859-1",
+          "redirect_url": null,
+          "server": "Apache",
+          "interesting": true,
+          "title": null,
+          "severity": "medium"
+        }
+      ],
+      "start_time": "2025-12-29T22:19:28.417414",
+      "end_time": "2025-12-29T22:19:32.712493",
+      "duration": 4.295079,
+      "timestamp": "2025-12-29T22:19:32.712524"
+    }
+  },
+  "vulnerabilities": [
+    {
+      "type": "header",
+      "name": "Missing Strict-Transport-Security",
+      "severity": "high",
+      "description": "HTTP Strict Transport Security (HSTS)",
+      "recommendation": "Add \"Strict-Transport-Security: max-age=31536000; includeSubDomains; preload\""
+    },
+    {
+      "type": "header",
+      "name": "Missing Content-Security-Policy",
+      "severity": "high",
+      "description": "Content Security Policy (CSP)",
+      "recommendation": "Implement a strict Content Security Policy"
+    },
+    {
+      "type": "header",
+      "name": "Missing X-Content-Type-Options",
+      "severity": "medium",
+      "description": "Prevents MIME type sniffing",
+      "recommendation": "Add \"X-Content-Type-Options: nosniff\""
+    },
+    {
+      "type": "header",
+      "name": "Missing X-Frame-Options",
+      "severity": "medium",
+      "description": "Prevents clickjacking attacks",
+      "recommendation": "Add \"X-Frame-Options: DENY\" or \"SAMEORIGIN\""
+    },
+    {
+      "type": "port",
+      "name": "Risky port 21 open",
+      "severity": "medium",
+      "description": "Port 21 (FTP) is open",
+      "port": 21,
+      "service": "FTP"
+    },
+    {
+      "type": "port",
+      "name": "Risky port 25 open",
+      "severity": "medium",
+      "description": "Port 25 (SMTP) is open",
+      "port": 25,
+      "service": "SMTP"
+    },
+    {
+      "type": "port",
+      "name": "Risky port 110 open",
+      "severity": "medium",
+      "description": "Port 110 (POP3) is open",
+      "port": 110,
+      "service": "POP3"
+    },
+    {
+      "type": "port",
+      "name": "Risky port 143 open",
+      "severity": "medium",
+      "description": "Port 143 (IMAP) is open",
+      "port": 143,
+      "service": "IMAP"
+    }
+  ],
+  "summary": {
+    "total_vulnerabilities": 8,
+    "severity_breakdown": {
+      "critical": 0,
+      "high": 2,
+      "medium": 6,
+      "low": 0,
+      "info": 0
+    },
+    "modules_run": 8,
+    "risk_score": 100,
+    "risk_level": "critical"
+  },
+  "risk_score": 100,
+  "risk_level": "critical",
+  "recommendations": [
+    {
+      "priority": "medium",
+      "category": "Security Headers",
+      "recommendation": "Implement all recommended security headers",
+      "details": [
+        "Add Strict-Transport-Security header",
+        "Implement Content-Security-Policy",
+        "Add X-Content-Type-Options: nosniff",
+        "Add X-Frame-Options: DENY"
+      ]
+    }
+  ],
+  "error": null,
+  "target_type": "url"
+}
